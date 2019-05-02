@@ -3,29 +3,37 @@ title: "Using rorcid"
 author: "Clarke Iakovakis"
 date: "April 12, 2019"
 output:
-  html_document: default
-  pdf_document: default
+  prettydoc::html_pretty:
+        number_sections: TRUE
+        theme: cayman
+        highlight: tango
+        df_print: paged
+        toc: true
+        toc_depth: 2
+    
+  
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=5000),tidy=TRUE)
 library(kableExtra)
 library(knitr)
 library(tidyverse)
 library(tibble)
+library(prettydoc)
 ```
 
-## `rorcid`
+# `rorcid`
 
 `rorcid` is a package developed by [Scott Chamberlain](https://scottchamberlain.info/), co-founder of [rOpenSci](http://ropensci.org/), to serve as an interface to the ORCID API.
 
-Credit to Paul Oldham at (https://www.pauloldham.net/introduction-to-orcid-with-rorcid/) for inspiring some of the structure and ideas throughout this document. I highly recommend reading it.
+Credit to Paul Oldham at https://www.pauloldham.net/introduction-to-orcid-with-rorcid/ for inspiring some of the structure and ideas throughout this document. I highly recommend reading it.
 
 ## Setting up rorcid
 
-If you haven't done so already, create an ORCID account at (https://orcid.org/signin). If you have an ORCID but can't remember it, search for your name at (https://orcid.org). If you try to sign in with an email address already associated with an ORCID, you'll be prompted to sign into the existing record. If you try to register with a different address, when you enter your name you'll be asked to review existing records with that name and verify that none of them belong to you [source](https://support.orcid.org/hc/en-us/articles/360006972593-How-do-you-check-for-duplicate-ORCID-records-).
+If you haven't done so already, create an ORCID account at https://orcid.org/signin. If you have an ORCID but can't remember it, search for your name at https://orcid.org. If you try to sign in with an email address already associated with an ORCID, you'll be prompted to sign into the existing record. If you try to register with a different address, when you enter your name you'll be asked to review existing records with that name and verify that none of them belong to you [(source)](https://support.orcid.org/hc/en-us/articles/360006972593-How-do-you-check-for-duplicate-ORCID-records-).
 
-First install and load `rorcid` in R. Also install `usethis` in order to set the API key, as well as several packages in `tidyverse` (`tidyverse` is a package that contains many packages)
+First install and load `rorcid` in R. Also install `usethis` in order to set the API key, as well as `tidyverse`, which is a package that contains many packages we'll use throughout.
 
 
 ```{r install, eval=FALSE}
@@ -62,17 +70,20 @@ A new window will open in R Studio. Type `ORCID_TOKEN="my-token"`, replacing `my
 ORCID_TOKEN="4bed1e13-7792-4129-9f07-aaf7b88ba88f"
 ```
 
-Press Ctrl/Cmd + S to save the API key to your R environment and close the window. The next time you start R, you won't need to provide any authentication credentials. You can confirm this by calling `orcid_auth()`, and it will print the token. Keep in mind that this function modifies the environment file (*.Renviron*) file for your home direc
+Press Ctrl/Cmd + S to save the API key to your R environment and close the window. The next time you start R, you won't need to provide any authentication credentials. You can confirm this by calling `orcid_auth()`, and it will print the token. 
 
-## ORCID queries
+# Finding ORCID IDs with `rorcid::orcid()`
 
-The `rorcid::orcid()` function takes any query and returns a data frame of identifiers. As stated in the documentation for this function, the results are the identifiers only--in other words, no works or biographical information. There are other functions in the `rorcid` package that retrieve that data. 
+The `rorcid::orcid()` function takes a query and returns a data frame of identifiers. As stated in the documentation for this function, the results are the identifiers only--in other words, no works or biographical information. There are other functions in the `rorcid` package that retrieve that data. 
 
-We start with a simple open search:
+## Searching by:
+
+### Name
+
+We start with a simple open search by name:
 
 ```{r simple, eval=FALSE}
 carberry <- rorcid::orcid(query = 'josiah carberry')
-carberry
 ```
 
 ORCID returns a data frame of 100 results with three fields:
@@ -81,22 +92,24 @@ ORCID returns a data frame of 100 results with three fields:
 * **orcid-identifier.path**: the ORCID itself
 * **orcid-identifier.host**: the host
 
-Why does it return so many results from a simple name query? First, because the default search is for "josiah OR carberry," and second, because the `query` argument looks in several fields including name and institution. ORCID returns 100 results by default, so this is telling us that at least 100 items have the word josiah or the word carberry in one of the fields. This is not very useful to find a specific person.
+Are there actually 100 people named Josiah Carberry in ORCID? No. It returns this many results for two reasons. First, because the default search is for "josiah OR carberry," and second, because the `query` argument looks in several fields including name and institution. ORCID returns 100 results by default, so this is telling us that at least 100 items have the word josiah or the word carberry in one of the searchable fields. This is not very useful to find a specific person.
 
 There are two ways of addressing this. 
 
-1. We can connect the terms with an AND to narrow the set of results: 
+1. We can connect the terms with an AND to narrow the set of results. Note that this will look in all search fields, not just name. 
 
 ```{r simple2, eval=FALSE}
 carberry <- rorcid::orcid(query = 'josiah AND carberry')
-carberry
 ```
+
+One of his keywords is "psychoceramics" (the study of cracked pots):
 
 ```{r simple2.1, eval=FALSE}
 carberry <- rorcid::orcid(query = 'josiah AND psychoceramics')
 ```
 
-We can also use nested searches with `AND()`. Note the parentheses and no spaces.
+We can also use nested searches with `AND()`. Note the parentheses and no spaces. Carberry is a "professor" at Wesleyan and Brown:
+
 ```{r simple2.2, eval=FALSE}
 carberry <- rorcid::orcid(query = 'carberry AND(wesleyan OR brown)')
 ```
@@ -111,7 +124,7 @@ orcid_fields %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, fixed_thead = T, position = "center")
 ```
 
-Referring to that table, we can use `given-names` and `family-name` to find all ORCID results with that combination: 
+Referring to that page, we can use `given-names` and `family-name` to find all ORCID results with that combination: 
 
 ```{r simple4, eval=FALSE}
 carberry <- rorcid::orcid(query = 'given-names:josiah AND family-name:carberry') %>%
@@ -123,9 +136,11 @@ It looks like there is only the one person in the public ORCID registry with the
 
 The `clean_names()` function from the `janitor` package is optional and used only to simplify the column names of the data. It converts all punctuation to underscores, so the field `orcid-identifier.uri` becomes `orcid_identifier_uri`.
 
-The `janitor::clean_names()` function is connected to the `orcid()` function with something called a Pipe Operator `%>%`. A pipe takes the output of one statement and makes it the input of the next statement. You can think of it as "then" in natural language. In other words, run the `orcid` API call, then clean the names.
+The `janitor::clean_names()` function is connected to the `orcid()` function with something called a [Pipe Operator](https://www.datacamp.com/community/tutorials/pipe-r-tutorial) `%>%`. A pipe takes the output of one statement and makes it the input of the next statement. You can think of it as "then" in natural language. So the above script first runs the `orcid()` API call, then it clean the column names of the data that was pulled into R as a result of that call.
 
 What other fields can we search?
+
+### ORCID ID - `orcid:`
 
 Of course, we can search by ORCID itself:
 ```{r simple6, eval=FALSE}
@@ -133,23 +148,33 @@ carberry <- rorcid::orcid(query = 'orcid:0000-0002-1825-0097') %>%
   janitor::clean_names()
 ```
 
-We can search by email address. Since Josiah doesn't have email, we'll use mine. According to ORCID, as of February 2017, fewer than 2% of the 3+ million email addresses on ORCID records are private.
+### Email address - `email:`
+
+We can search by email address. Since Josiah doesn't have email, we'll use mine. [According to ORCID](https://members.orcid.org/api/tutorial/search-orcid-registry), as of February 2017, fewer than 2% of the 3+ million email addresses on ORCID records are public, so this one may not be incredibly helpful.
 ```{r simple7, eval=FALSE}
 iakovakis <- rorcid::orcid(query = 'email:clarke.iakovakis@okstate.edu') %>%
   janitor::clean_names()
 ```
 
-We can search by name and email address domain:
+### Name and email address domain - `*@okstate.edu`
+
+We can search by name and email address domain by using an asterisk followed by the domain name:
 ```{r simple71, eval=FALSE}
 iakovakis <- rorcid::orcid(query = 'family-name:iakovakis AND email:*@okstate.edu') %>%
   janitor::clean_names()
 ```
 
-We can search by affiliation:
+### Affiliation
+
+#### Affiliation organization name - `affiliation-org0-name:`
+
+We can search by affiliation organization name:
 ```{r simple8, eval=FALSE}
 carberry <- rorcid::orcid(query = 'family-name:carberry AND affiliation-org-name:Wesleyan') %>%
   janitor::clean_names()
 ```
+
+#### Institutional ID (Ringgold, ISNI, GRID) - `ringgold-org-id:`
 
 When filling out an ORCID profile, users are encouraged to select their institutions from the drop-down menu, which will ensure it includes the Ringgold ID and any other unique identifiers, such as ISNI and GRID, that ORCID has for that institution. Read the ORCID report, ["Organization identifiers: current provider survey"](https://orcid.org/sites/default/files/ckfinder/userfiles/files/20161031%20OrgIDProviderSurvey.pdf) to learn more.  
 ```{r simple9, eval=FALSE}
@@ -158,6 +183,8 @@ carberry <- rorcid::orcid(query = 'family-name:carberry AND ringgold-org-id:6752
 ```
 
 Note that most institutions in ORCID have Ringgold IDs, but you have to [register with Ringgold](https://www.ringgold.com/identify-online-guests/) to search in their registry. [GRID is open for searching](https://www.grid.ac/institutes/grid.268117.b), but not all institutions have a GRID in ORCID.
+
+#### Combining affiliation name, Ringgold, and email address domain
 
 We can combine affiliation names, Ringgold IDs, and email addresses to cover all our bases, in case the person or people we are looking for did not on of those values:
 ```{r simple81, eval=FALSE}
@@ -181,7 +208,8 @@ my_osu_orcids <- rorcid::orcid(query = 'ringgold-org-id:7618 OR email:*@okstate.
   janitor::clean_names()
 ```
 
-## Getting biographical information
+# Finding biographical information with `rorcid::orcid_person()`
+
 The `orcid()` function gets the IDs, but no information about the person. For that, you will need to use `orcid_person()`.
 
 Unlike `orcid()`, `orcid_person()` does not take a query; it accepts only ORCID IDs in the form XXXX-XXXX-XXXX-XXXX. So we can get the ORCID ID itself into it's own vector. We can then pass that argument on to `orcid_person()`.
@@ -194,7 +222,7 @@ carberry_person <- rorcid::orcid_person(carberry_orcid) %>%
   janitor::clean_names()
 ```
 
-If you look at the result for carberry_person in R Studio, you will see it returned a List of 1. Click on that list to view it in the R Studio viewer. An easier way to view this is to use the `jsonedit()` function from the `listviewer` package:
+If you look at the result for carberry_person in R Studio, you will see it returned a List of 1. You can click on that list to view it in the R Studio viewer. Another way of viewing the list is to use the `jsonedit()` function from the `listviewer` package:
 
 ```{r person2, eval=FALSE}
 install.packages("listviewer")
@@ -204,7 +232,9 @@ listviewer::jsonedit(carberry_person)
 
 Click the drop-down arrow next to the ORCID ID. This is a list containing lists of lists! Click the drop-down menu next to name and you will see 6 lists and two vectors. 
 
-It's not easy to get this into a nice, neat data frame. Here is one strategy to get some of the relevant data, using `map` functions from the `purrr` package and building a `tibble` (the tidyverse's more efficient data frame) piece by piece. It also replaces the NULL values with NA to make for easier processing down the line.
+## Getting the data into a data frame
+
+It's not easy to get this into a nice, neat data frame. Here is one strategy to get some of the relevant data, using `map` functions from the `purrr` package and building a `tibble` (the tidyverse's more efficient data frame) piece by piece. 
 
 ```{r person3, eval=FALSE}
 carberry_data <- carberry_person %>% {
@@ -227,10 +257,10 @@ carberry_data <- carberry_person %>% {
 
 We have some issues with the date formatting, which we'll go into in the next section. Each of these functions includes a `.default = NA_character_` argument because if the value is NULL (if the ORCID author didn't input the information) then it will convert that NULL to NA.
 
-* The *created_date* comes from the name list, so technically it is the date the name was created, not the date the ORCID account was created, which is not available in this data. 
-* The *last_modified_date* comes from the account and is the last date the account was modified. These are plucked with `map_dbl()` because they are in `double` format (a numeric data type in R) . 
-* The *given_name*, *family_name*, *credit_name*, *orcid_identifier_path*, and *biography* are plucked with `map_chr()` 
-* The *other_names*, *keywords*, *researcher_urls*, and *external_ids* are plucked with `map()` because there may be multiple values (unlike the other names, in which you can only have one). So this will return a nested list to the tibble; we will discuss below how to unnest it.
+* The **created_date** comes from the name list, so technically it is the date the name was created, not the date the ORCID account was created, which is not available in this data. 
+* The **last_modified_date** comes from the account and is the last date the account was modified. These are plucked with `map_dbl()` because they are in `double` format (a numeric data type in R) . 
+* The **given_name**, **family_name**, **credit_name**, **orcid_identifier_path**, and **biography** are plucked with `map_chr()` 
+* The **other_names**, **keywords**, **researcher_urls**, and **external_ids** are plucked with `map()` because there may be multiple values (unlike the other names, in which you can only have one). So this will return a nested list to the tibble; we will discuss below how to unnest it.
 
 Now what is going on with those dates?
 
@@ -298,11 +328,11 @@ carberry_researcherURLs <- carberry_data %>%
 
 Carberry has two URLs: his Wikipedia page and a page about him on the Brown University Library. So a row is created for each of these URLs, and multiple columns are added such as the last modified date, the url value, and so on. You can get rid of columns you don't want using `select()` from the `dplyr` package.
 
-## Writing to CSV
+# Writing to CSV
 
 We will use the `write_csv()` function from the `readr` package to write our data to disk. This package was loaded when you called `library(tidyverse)` at the beginning of the session.
 
-Unfortunately, you cannot simply write the `carberry_data` data frame to a CSV, due to the nested lists. It will throw an error: "Error in stream_delim_(df, path, ...) : Don't know how to handle vector of type list."
+Unfortunately, you cannot simply write the `carberry_data` data frame to a CSV, due to the nested lists. It will throw an error: `"Error in stream_delim_(df, path, ...) : Don't know how to handle vector of type list."`
 
 You have a few choices:
 
@@ -332,9 +362,9 @@ carberry_data_mutated <- carberry_data %>%
 write_csv(carberry_data_mutated, "C:/Users/MyUserName/Desktop/carberry_data2.csv")
 ```
 
-## Getting data on multiple people
+# Getting data on multiple people with `orcid_person()`
 
-### Using ORCID IDs
+## Searching by ORCID IDs
 
 `orcid_person()` is vectorized, so you can pass in multiple ORCID IDs and it will return a list of results for each ID, with each element named by the ORCID ID.
 
@@ -368,7 +398,7 @@ my_orcid_person_data <- my_orcid_person %>% {
 
 We now have a nice, neat dataframe of both people's ORCID name data.
 
-### Using names
+## Searching by names
 
 When we want data on multiple people and have only their names, we can build a query. Let's first do this if the names are not already separated into first and last name variables. If you already have a spreadsheet of names, then you can skip this step.
 
@@ -430,6 +460,8 @@ my_orcid_person_data <- my_orcid_person %>% {
 
 This will be exactly the same thing as we saw above, however we got it from a simple vector of names.
 
+## Unnesting
+
 Again, we can unnest if we wish, knowing we'll multiply the number of rows even more now, because we have more values. For instance, if we unnest keywords, we'll now have 5 columns (2 keywords for carberry, and 3 keywords for iakovakis):
 
 ```{r multiple8, eval=FALSE}
@@ -448,7 +480,9 @@ my_orcid_person_data_mutated <- my_orcid_person_data %>%
 write_csv(carberry_data_mutated, "C:/Users/MyUserName/Desktop/carberry_data3.csv")
 ```
 
-## Getting Works
+# Getting Works with `rorcid::works()` and rorcid::orcid_works()`
+
+## Getting works for an individual
 
 There are two functions in `rorcid` to get all of the works associated with an ORCID ID: `orcid_works()` and `works()`. The main difference between these is `orcid_works()` returns a list, with each work as a list item, and each external identifier (e.g. ISSN, DOI) also as a list item. On the other hand, `works()` returns a nice, neat data frame that can be easily exported to a CSV. We are only going to cover `works()`.
 
@@ -481,9 +515,9 @@ In this case, we now have 13 observations of 27 variables rather than 7 observat
 
 So we can follow one of the three strategies outlined above if we want to write this to a CSV file: 1) unnest the column (as above), 2) drop the nested lists, or 3) mutate them into character vectors. 
 
-### Getting works for multiple people
+## Getting works for multiple people
 
-If you have multiple ORCID IDs, you have to pass them to the `orcid::orcid_works()` function, not just `orcid::works()`. 
+`orcid::works()` is not vectorized, meaning, if you have multiple ORCID IDs, you have to pass them to the `orcid::orcid_works()` function. 
 
 ```{r works3, eval=FALSE}
 my_orcids <- c("0000-0002-1825-0097", "0000-0002-9260-8456", "0000-0002-2771-9344")
@@ -491,7 +525,7 @@ my_works <- rorcid::orcid_works(my_orcids) %>%
   janitor::clean_names()
 ```
 
-This returns a list of 3 elements, with the works nested in group > work-summary
+This returns a list of 3 elements, with the works nested in group > work-summary.
 
 ```{r works4, eval=FALSE}
 my_works_data <- my_works %>%
@@ -501,6 +535,8 @@ my_works_data <- my_works %>%
   dplyr::mutate(created_date_value = anytime::anydate(created_date_value/1000),
                 last_modified_date_value = anytime::anydate(last_modified_date_value/1000))
 ```
+
+## Unnesting external IDs
 
 Now you may want to run some analysis using the external identifiers; for instance, looking at which DOIs are open access or which ISSNs are included in the data.
 
@@ -519,7 +555,9 @@ my_works_externalIDs <- my_works_data %>%
   tidyr::unnest(external_ids_external_id)
 ```
 
+# Conclusion
 
+The ORCID API is an excellent tool for analyzing research activity on multiple levels. `rorcid` makes gathering and cleaning the data easier. Thanks to both ORCID and Scott Chamberlain for their contributions to the community. Again, read Paul Oldham's excellent post at https://www.pauloldham.net/introduction-to-orcid-with-rorcid/ for more you can do. I hope this set of functions helps. If you need to get in touch with me, find my contact info at https://info.library.okstate.edu/clarke-iakovakis.
 
 
 
