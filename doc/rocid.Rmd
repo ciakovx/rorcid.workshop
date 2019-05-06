@@ -9,7 +9,7 @@ output:
         highlight: tango
         df_print: paged
         toc: true
-        toc_depth: 2
+        toc_depth: 3
     
   
 ---
