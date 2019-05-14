@@ -1,0 +1,175 @@
+---
+title: "Untitled"
+author: "Clarke"
+date: "May 2, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# `rcrossref`
+
+`crossref` is a package developed by [Scott Chamberlain](https://scottchamberlain.info/), Hao Zhu, Najko Jahn, Carl Boettiger, and Karthik Ram, part of the  [rOpenSci](http://ropensci.org/) set of packages. It serves as an interface to the Crossref API.
+
+You can view the documentation at https://cran.r-project.org/web/packages/rcrossref/rcrossref.pdf and the code at https://github.com/ropensci/rcrossref.
+
+Credit goes to the rOpenSci team for this [rcrossref tutorial](https://ropensci.org/tutorials/rcrossref_tutorial/), as well as Paul Oldham for [this one](https://poldham.github.io/abs/crossref.html). Their inspiration is sprinkled throughout the following walkthrough.
+
+## Setting up `rcrossref`
+
+First install and load `rorcid` in R. Also install `usethis` in order to set the API key, as well as `tidyverse`, which is a package that contains many packages we'll use throughout.
+
+
+```{r install, eval=FALSE}
+install.packages("rorcid")
+install.packages("usethis")
+install.packages("tidyverse")
+library(rcrossref)
+library(usethis)
+library(tidyverse)
+```
+
+As described in the documentation, the Crossref team encourages requests with appropriate contact information, and will forward you to a dedicated API cluster for improved performance when you share your email with them. Learn more [here](https://github.com/CrossRef/rest-api-doc#good-manners--more-reliable-service). To do so, first open your R environment using the `edit_r_environ()` function from the `usethis` package.
+
+
+```{r editenviron, eval=FALSE}
+usethis::edit_r_environ()
+```
+
+A new window will open in R Studio. Type `crossref_email=name@example.com`, using your own email address. Then press enter to create a new line, and leave it blank. Press Ctrl/Cmd + S to save the API key to your R environment and close the window. Your email address will now be shared with Crossref. 
+
+# Getting citation data with `rcrossref::cr_cn()`
+
+One of the best and easiest use cases for `rcrossref` is inputting a set of DOIs and getting back the citation data in multiple formats. I am not talking about what articles are cited in the article bibliography, or what articles have cited the article in question, but rather a formatted reference that you can input into a bibliography.
+
+We start by assigning our DOIs to a variable `my_dois`:
+
+```{r citation1, eval=TRUE,cache=TRUE}
+my_dois <- c("10.5281/zenodo.8381", "10.1038/d41586-018-00104-7", 
+             "10.3389/fpsyg.2018.01487", "10.12688/f1000research.8460.3")
+```
+
+## Getting formatted references in a text file
+
+We can use the `cr_cn()` function from the `rcrossref` package to get the citations to those articles back in the style you specify. 
+
+```{r citation2, eval=TRUE,cache=TRUE}
+my_citations <- cr_cn(my_dois, format = "text", style = "apa")
+my_citations
+```
+
+This returns each citation into a list element see this [datacamp tutorial](https://campus.datacamp.com/courses/abc-intro-2-r/data-structures?ex=9) on lists in R). We can use the `map_chr` and the `pluck` functions from `purrr` to instead assign them to a character vector, which you can then write to a text file. If you're using the below code, replace "MyUserName" below with your actual user name to write this file to your desktop. You can get your username by calling `Sys.getenv("USERNAME")`. Or you can change your directory altogether with the `setwd()` function.
+
+```{r citation3, eval=TRUE,cache=TRUE}
+my_citations_map <- my_citations %>% 
+  purrr::map_chr(., purrr::pluck, 1)
+my_citations_map
+write(my_citations_map, file = "C:/Users/MyUserName/Desktop/my_citations.txt")
+```
+
+The `purrr::map_chr` function is connected to `my_citations` with something called a [Pipe Operator](https://www.datacamp.com/community/tutorials/pipe-r-tutorial) `%>%`. A pipe takes the output of one statement and makes it the input of the next statement. You can think of it as "then" in natural language. So the above script first takes the `my_citations` data, then it applies the set of functions specified..
+
+The above is helpful if you need to paste the references somewhere, and there are loads of other citation styles included in `rcrossref`--view them by calling `rcrossref::get_styles()` and it will print the list to your console. I'll just print the first 10 below:
+
+```{r citation4, eval=TRUE,cache=TRUE}
+rcrossref::get_styles()[1:10]
+```
+
+## Getting formatted references in a BibTeX or RIS file
+
+You'll notice that some of the formatting is inconsistent (for instance, there are some encoding issues). So rather than There are other format options if you are using BibTeX, Zotero or another reference management tool. Below is an example with BibTeX; again, map it before you write it to file. 
+
+```{r citation5, eval=TRUE,cache=TRUE}
+my_citations_bibtex <- cr_cn(my_dois, format = "bibtex") %>%
+  purrr::map_chr(., purrr::pluck, 1)
+write_lines(my_citations_bibtex, "C:/Users/MyUserName/Desktop/my_citations.bib")
+```
+
+Same with RIS files. Here we make a `tibble` so it will save to an RIS file.
+
+```{r citation6, eval=TRUE,cache=TRUE}
+my_citations_ris <- cr_cn(my_dois, format = "ris") %>%
+  purrr::map_chr(., purrr::pluck, 1) %>%
+  tibble::tibble()
+write_csv(my_citations_ris, "C:/Users/clakova/Desktop/my_citations.ris")
+```
+
+You can now import either the BibTeX file or the RIS file into your reference management software.
+
+## Using a CSV of DOIs
+
+If you have a CSV file of DOIs, you can read that into R using the `read_csv()` function from the [`readr`](https://readr.tidyverse.org/) package (which was loaded when you called `library(tidyverse)` above). If you have an Excel file, you can calling `library(readxl)` package and use the [`read_excel()`](https://readxl.tidyverse.org/) package.
+
+## RStudio Add-In
+
+As described in the [documentation](https://cran.r-project.org/web/packages/rcrossref/rcrossref.pdf), `rcrossref` installs an add-in to RStudio:
+
+> On installation of rcrossref you get an RStudio Addin. To use the Addin, go to the top toolbar > Tools > Addins > Add Crossref Citations. You'll get a window pop up that you can put in DOIs for. If the DOI is found, the bibtex citations will be added to a file called crossref.bib. New citations will be appended to that file. Addin authored by Hao Zhu (https://github.com/haozhu233)
+
+Check out the `RefManageR` package for more you can do with citation files in R.
+
+# Getting publications from journals with `rcrossref::cr_journals`
+
+`cr_journals()` takes either an ISSN or a query, and returns metadata for articles published in the journal, including DOI, title, volume, issue, pages, publisher, authors, etc.
+
+## Getting publications by ISSN
+
+Here we take 2 ISSNs: for the *Journal of American History* and *JAMA: The Journal of the American Medical Association*. We set the limit to 10, meaning we'll only get back 10 articles per ISSN. It comes back as a data frame within a list that can be returned into a data frame using the `pluck()` function from `purrr`.
+
+```{r journals, eval=TRUE,cache=TRUE}
+my_issns <- c('0021-8723', '1538-3598')
+my_journals <- cr_journals(issn = my_issns, works = T, limit = 10) %>%
+  purrr::pluck("data")
+my_journals
+
+
+
+my_authors <- c("Scott Chamberlain", "Karthik Ram")
+journals <- cr_journals(my_authors, works = T, limit = 10) %>%
+  flatten_dfr("data")
+
+```
+
+Although there is a `flq` argument to `cr_journals()` that allows you to specify additional variables, you must provide an ISSN.
+
+
+## Unnesting authors
+
+Authors and links appear in nested lists within the `my_journals` data frame because there can be, and often are, multiple authors or links per article.
+
+These can normally be easily unnested using the `unnest()` function from the `tidyr` package. However it throws an error if there are NULL values in the column. It looks like the developer is currently [working to allow NULL while unnesting](https://github.com/tidyverse/tidyr/issues/436) but until then, we replace the NULL values with empty tibbles using the `replace_na()` function from `tidyr`. There is probably a more elegant solution but this will do for now. I use `mutate()` from 
+
+```{r journals2, eval=TRUE,cache=TRUE}
+my_journals_clean <- my_journals %>%
+  dplyr::mutate(author = tidyr::replace_na(author, list(dplyr::tibble(given = NA,
+                                                                      family = NA,
+                                                                      sequence = NA)))) %>%
+  dplyr::mutate(link = tidyr::replace_na(link, list(dplyr::tibble(URL = NA,
+                                                                  content.type = NA,
+                                                                  content.version = NA,
+                                                                  intended.application = NA))))
+```
+
+This allows us to `unnest` one or both of those columns. In other words, when we unnest author, we will see an additional row added for each variable with multiple authors. We will also see three new columns added: **given** (first name), **family** (last name), and **sequence** (first or additional). All data for these rows will be duplicated except for the author.
+
+```{r journals2, eval=TRUE,cache=TRUE}
+my_journals_author <- my_journals_clean %>%
+  unnest(author)
+```
+
+At the time this data was pulled, we now have 24 observations of 24 variables rather than 20 observations of 23 variables. Looking closely at the data, we can see that all articles had a single author except for two of them (8 and 9), which had three each. Thus four new rows were added for those articles.
+
+It is important to point out that there is an argument to `unnest()` called `.drop`, which is set to `TRUE` by default, meaning all additional list columns will be dropped. So here, when we unnest **author,** **link** is dropped as well. If you want to keep it, just set it to `FALSE` Note, however, that it will not unnest it.
+
+```{r journals2, eval=TRUE,cache=TRUE}
+my_journals_author2 <- my_journals_clean %>%
+  unnest(author, .drop = FALSE)
+```
+
+## Writing publications to disk
+
+We will use the `write_csv()` function from the `readr` package to write our data to disk. This package was loaded when you called `library(tidyverse)` at the beginning of the session.
+
+Unfortunately, you cannot simply write the `my_journals` data frame to a CSV, due to the nested list in the author column. It will throw an error: `"Error in stream_delim_(df, path, ...) : Don't know how to handle vector of type list."`
