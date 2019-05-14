@@ -25,7 +25,7 @@ library(prettydoc)
 
 # `rorcid`
 
-`rorcid` is a package developed by [Scott Chamberlain](https://scottchamberlain.info/), co-founder of [rOpenSci](http://ropensci.org/), to serve as an interface to the ORCID API. You can find more information about the API [on the ORCID site](http://members.orcid.org/api/about-public-api).
+`rorcid` is a package developed by [Scott Chamberlain](https://scottchamberlain.info/), co-founder of [rOpenSci](https://ropensci.org/), to serve as an interface to the ORCID API. You can find more information about the API [on the ORCID site](http://members.orcid.org/api/about-public-api).
 
 Credit to Paul Oldham at https://www.pauloldham.net/introduction-to-orcid-with-rorcid/ for inspiring some of the structure and ideas throughout this document. I highly recommend reading it.
 
