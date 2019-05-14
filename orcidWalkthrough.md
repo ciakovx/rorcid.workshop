@@ -25,15 +25,15 @@ library(prettydoc)
 
 # `rorcid`
 
-`rorcid` is a package developed by [Scott Chamberlain](https://scottchamberlain.info/), co-founder of [rOpenSci](http://ropensci.org/), to serve as an interface to the ORCID API. You can find more information about the API [on the ORCID site](http://members.orcid.org/api/about-public-api).
+`rorcid` is a package developed by [Scott Chamberlain](https://scottchamberlain.info/), co-founder of [rOpenSci](https://ropensci.org/), to serve as an interface to the ORCID API. You can find more information about the API [on the ORCID site](http://members.orcid.org/api/about-public-api).
 
 Credit to Paul Oldham at https://www.pauloldham.net/introduction-to-orcid-with-rorcid/ for inspiring some of the structure and ideas throughout this document. I highly recommend reading it.
 
 ## Setting up rorcid
 
-If you haven't done so already, create an ORCID account at https://orcid.org/signin. If you have an ORCID but can't remember it, search for your name at https://orcid.org. If you try to sign in with an email address already associated with an ORCID, you'll be prompted to sign into the existing record. If you try to register with a different address, when you enter your name you'll be asked to review existing records with that name and verify that none of them belong to you--[see more on duplicate ORCID records](https://support.orcid.org/hc/en-us/articles/360006972593-How-do-you-check-for-duplicate-ORCID-records-).
+If you haven't done so already, create an ORCID account at https://orcid.org/signin. If you have an ORCID but can't remember it, search for your name at https://orcid.org. If you try to sign in with an email address already associated with an ORCID, you'll be prompted to sign into the existing record. If you try to register with a different address, when you enter your name you'll be asked to review existing records with that name and verify that none of them belong to you--[see more on duplicate ORCID records](https://support.orcid.org/hc/en-us/articles/360006972593-How-do-you-check-for-duplicate-ORCID-records-). Make sure you have verified your email address.
 
-First install and load the `rorcid` package in R. Also install `usethis` in order to set the API key, as well as `tidyverse`, which is a package that contains many packages we'll use throughout.
+Next, install and load the `rorcid` package in R. Also install `usethis` in order to set the API key, as well as `tidyverse`, which is a package that contains many packages we'll use throughout.
 
 
 ```{r install, eval=FALSE}
@@ -41,6 +41,7 @@ install.packages("rorcid")
 install.packages("usethis")
 install.packages("tidyverse")
 install.packages("anytime")
+install.packages("httpuv")
 library(rorcid)
 library(usethis)
 library(tidyverse)
@@ -48,8 +49,7 @@ library(anytime)
 library(lubridate)
 ```
 
-
-Next you need to authenticate with an ORCID API Key. According to the [ORCID API tutorial](https://members.orcid.org/api/tutorial/read-orcid-records), anyone can receive a key to access the public API. 
+Next, you need to authenticate with an ORCID API Key. According to the [ORCID API tutorial](https://members.orcid.org/api/tutorial/read-orcid-records), anyone can receive a key to access the public API. 
 
 In R Studio, call: 
 
@@ -57,9 +57,9 @@ In R Studio, call:
 orcid_auth()
 ```
 
-You should see a message stating: `no ORCID token found; attempting OAuth authentication` and a window will open in your default internet browser. Log-in to your orcid account. If successful, the browser window will state: "Authentication complete. Please close this page and return to R." 
+You should see a message stating: `no ORCID token found; attempting OAuth authentication` and a window will open in your default internet browser. Log-in to your orcid account. You will be asked to give `rorcid` authorization to access your ORCID Record for the purposes of getting your ORCID iD. Click "Authorize."
 
-Return to R Studio and you should see in your R console the word **Bearer**, followed by a long string of letters and numbers. These letters and numbers are your API key. At this point, this should be cached locally in your working directory. 
+If successful, the browser window will state: "Authentication complete. Please close this page and return to R." Return to R Studio and you should see in your R console the word **Bearer**, followed by a long string of letters and numbers. These letters and numbers are your API key. At this point, this should be cached locally in your working directory. 
 
 Highlight and copy the API key (the letters and numbers only--exclude the word "Bearer" and the space). Now you can use the `edit_r_environ()` function from the `usethis` package to store the token in your R environment. 
 
@@ -67,15 +67,15 @@ Highlight and copy the API key (the letters and numbers only--exclude the word "
 usethis::edit_r_environ()
 ```
 
-A new window will open in R Studio. Type `ORCID_TOKEN="my-token"`, replacing `my-token` with the API key. Then press enter to create a new line, and leave it blank. It will look like something like this (below is a fake token):
+A new window will open in R Studio. Type `ORCID_TOKEN="my-token"`, replacing `my-token` with the API key. **Then press enter to create a new line, and leave it blank.** It will look like something like this (below is a fake token):
 
 ```{r addkey, eval=FALSE}
 ORCID_TOKEN="4bed1e13-7792-4129-9f07-aaf7b88ba88f"
 ```
 
-Press Ctrl/Cmd + S to save the API key to your R environment and close the window. The next time you start R, you won't need to provide any authentication credentials. You can confirm this by calling `orcid_auth()`, and it will print the token. 
+Press Ctrl/Cmd + S to save the API key to your R environment and close the window. In R Studio, click Session > Restart R. Your token should now be saved to your R environment. You can confirm this by calling `orcid_auth()`, and it will print the token.
 
-# Finding ORCID IDs with `rorcid::orcid()`
+# Finding ORICID iDs with `rorcid::orcid()`
 
 The `rorcid::orcid()` function takes a query and returns a data frame of identifiers. As stated in the documentation for this function, the results are the identifiers only--in other words, no works or biographical information. There are other functions in the `rorcid` package that retrieve that data. 
 
@@ -112,7 +112,7 @@ One of his keywords is "psychoceramics" (the study of cracked pots):
 carberry <- rorcid::orcid(query = 'josiah AND psychoceramics')
 ```
 
-We can also use nested searches with `AND()`. Note the parentheses and no spaces. Carberry is a "professor" at Wesleyan and Brown:
+We can also use nested searches with `AND()`. Note the parentheses and no spaces. "Dr." Carberry is a "professor" at Wesleyan and Brown:
 
 ```{r simple2.2, eval=FALSE}
 carberry <- rorcid::orcid(query = 'carberry AND(wesleyan OR brown)')
@@ -136,7 +136,7 @@ The `janitor::clean_names()` function is connected to the `orcid()` function wit
 
 What other fields can we search?
 
-### ORCID ID - `orcid:`
+### ORICID iD - `orcid:`
 
 Of course, we can search by ORCID itself:
 ```{r simple6, eval=FALSE}
@@ -191,7 +191,7 @@ iakovakis <- rorcid::orcid(query = 'family-name:iakovakis AND(ringgold-org-id:76
 iakovakis
 ```
 
-This can also be helpful if you want to cast a very wide net and capture everyone at your institution with an ORCID ID. 
+This can also be helpful if you want to cast a very wide net and capture everyone at your institution with an ORICID iD. 
 
 I am going to add a `rows` argument to limit my results to 10 here, otherwise it will be a huge dataset:
 
@@ -214,7 +214,7 @@ my_osu_orcids <- rorcid::orcid(query = 'ringgold-org-id:7618 OR
 
 The `orcid()` function gets the IDs, but no information about the person. For that, you will need to use `orcid_person()`.
 
-Unlike `orcid()`, `orcid_person()` does not take a query; it accepts only ORCID IDs in the form XXXX-XXXX-XXXX-XXXX. So we can get the ORCID ID itself into it's own vector. We can then pass that argument on to `orcid_person()`.
+Unlike `orcid()`, `orcid_person()` does not take a query; it accepts only ORICID iDs in the form XXXX-XXXX-XXXX-XXXX. So we can get the ORICID iD itself into it's own vector. We can then pass that argument on to `orcid_person()`.
 
 ```{r person, eval=TRUE, cache=TRUE}
 carberry <- rorcid::orcid(query = 'given-names:josiah AND family-name:carberry') %>%
@@ -232,7 +232,7 @@ library(listviewer)
 listviewer::jsonedit(carberry_person)
 ```
 
-Click the drop-down arrow next to the ORCID ID. This is a list containing lists of lists! Click the drop-down menu next to name and you will see 6 lists and two vectors. 
+Click the drop-down arrow next to the ORICID iD. This is a list containing lists of lists! Click the drop-down menu next to name and you will see 6 lists and two vectors. 
 
 ## Getting the data into a data frame
 
@@ -374,9 +374,9 @@ write_csv(carberry_data_mutated, "C:/Users/MyUserName/Desktop/carberry_data2.csv
 
 # Getting data on multiple people with `orcid_person()`
 
-## Searching by ORCID IDs
+## Searching by ORICID iDs
 
-`orcid_person()` is vectorized, so you can pass in multiple ORCID IDs and it will return a list of results for each ID, with each element named by the ORCID ID.
+`orcid_person()` is vectorized, so you can pass in multiple ORICID iDs and it will return a list of results for each ID, with each element named by the ORICID iD.
 
 ```{r multiple, eval=TRUE,cache=TRUE}
 my_orcids <- c("0000-0002-1825-0097", "0000-0002-9260-8456")
@@ -422,7 +422,7 @@ profs <- my_names %>%
 profs
 ```
 
-Now we can build a query that will work with the `given-names:` and `family-name:` arguments to `query` in `orcid` in order to get the ORCID IDs:
+Now we can build a query that will work with the `given-names:` and `family-name:` arguments to `query` in `orcid` in order to get the ORICID iDs:
 
 ```{r multiple4, eval=TRUE,cache=TRUE}
 orcid_query <- paste0("given-names:",
@@ -446,7 +446,7 @@ my_orcids_list <- purrr::map(
 listviewer::jsonedit(my_orcids_list)
 ```
 
-This is a list of two items. We can flatten it to a data frame, grab the ORCID IDs, and run the same function we ran above in order to get the name data and the IDs into a single data frame:
+This is a list of two items. We can flatten it to a data frame, grab the ORICID iDs, and run the same function we ran above in order to get the name data and the IDs into a single data frame:
 
 ```{r multiple6, eval=TRUE,cache=TRUE}
 my_orcids <- my_orcids_list$orcid_identifier_path
@@ -498,9 +498,9 @@ write_csv(carberry_data_mutated, "C:/Users/MyUserName/Desktop/carberry_data3.csv
 
 ## Getting works for an individual
 
-There are two functions in `rorcid` to get all of the works associated with an ORCID ID: `orcid_works()` and `works()`. The main difference between these is `orcid_works()` returns a list, with each work as a list item, and each external identifier (e.g. ISSN, DOI) also as a list item. On the other hand, `works()` returns a nice, neat data frame that can be easily exported to a CSV. 
+There are two functions in `rorcid` to get all of the works associated with an ORICID iD: `orcid_works()` and `works()`. The main difference between these is `orcid_works()` returns a list, with each work as a list item, and each external identifier (e.g. ISSN, DOI) also as a list item. On the other hand, `works()` returns a nice, neat data frame that can be easily exported to a CSV. 
 
-Like `orcid_person()`, these functions require an ORCID ID, and do not use the query fields we saw with the `orcid()` function. 
+Like `orcid_person()`, these functions require an ORICID iD, and do not use the query fields we saw with the `orcid()` function. 
 
 ```{r works1, eval=TRUE,cache=TRUE}
 carberry_orcid <- c("0000-0002-1825-0097")
@@ -533,7 +533,7 @@ So we can follow one of the three strategies outlined above if we want to write 
 
 ## Getting works for multiple people
 
-`orcid::works()` is not vectorized, meaning, if you have multiple ORCID IDs, you can't use it. Instead, you have to pass them to the `orcid::orcid_works()` function. 
+`orcid::works()` is not vectorized, meaning, if you have multiple ORICID iDs, you can't use it. Instead, you have to pass them to the `orcid::orcid_works()` function. 
 
 ```{r works3, eval=TRUE,cache=TRUE}
 my_orcids <- c("0000-0002-1825-0097", "0000-0002-9260-8456", "0000-0002-2771-9344")
