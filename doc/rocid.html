@@ -2292,10 +2292,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="#rorcid"><span class="toc-section-number">1</span> <code>rorcid</code></a><ul>
 <li><a href="#setting-up-rorcid"><span class="toc-section-number">1.1</span> Setting up rorcid</a></li>
 </ul></li>
-<li><a href="#finding-orcid-ids-with-rorcidorcid"><span class="toc-section-number">2</span> Finding ORCID IDs with <code>rorcid::orcid()</code></a><ul>
+<li><a href="#finding-oricid-ids-with-rorcidorcid"><span class="toc-section-number">2</span> Finding ORICID iDs with <code>rorcid::orcid()</code></a><ul>
 <li><a href="#searching-by"><span class="toc-section-number">2.1</span> Searching by:</a><ul>
 <li><a href="#name"><span class="toc-section-number">2.1.1</span> Name</a></li>
-<li><a href="#orcid-id---orcid"><span class="toc-section-number">2.1.2</span> ORCID ID - <code>orcid:</code></a></li>
+<li><a href="#oricid-id---orcid"><span class="toc-section-number">2.1.2</span> ORICID iD - <code>orcid:</code></a></li>
 <li><a href="#email-address---email"><span class="toc-section-number">2.1.3</span> Email address - <code>email:</code></a></li>
 <li><a href="#name-and-email-address-domain---okstate.edu"><span class="toc-section-number">2.1.4</span> Name and email address domain - <code>*@okstate.edu</code></a></li>
 <li><a href="#affiliation"><span class="toc-section-number">2.1.5</span> Affiliation</a></li>
@@ -2308,7 +2308,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li><a href="#writing-to-csv"><span class="toc-section-number">4</span> Writing to CSV</a></li>
 <li><a href="#getting-data-on-multiple-people-with-orcid_person"><span class="toc-section-number">5</span> Getting data on multiple people with <code>orcid_person()</code></a><ul>
-<li><a href="#searching-by-orcid-ids"><span class="toc-section-number">5.1</span> Searching by ORCID IDs</a></li>
+<li><a href="#searching-by-oricid-ids"><span class="toc-section-number">5.1</span> Searching by ORICID iDs</a></li>
 <li><a href="#searching-by-names"><span class="toc-section-number">5.2</span> Searching by names</a></li>
 <li><a href="#unnesting"><span class="toc-section-number">5.3</span> Unnesting</a></li>
 </ul></li>
@@ -2324,35 +2324,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section class="main-content">
 <div id="rorcid" class="section level1">
 <h1><span class="header-section-number">1</span> <code>rorcid</code></h1>
-<p><code>rorcid</code> is a package developed by <a href="https://scottchamberlain.info/">Scott Chamberlain</a>, co-founder of <a href="http://ropensci.org/">rOpenSci</a>, to serve as an interface to the ORCID API. You can find more information about the API <a href="http://members.orcid.org/api/about-public-api">on the ORCID site</a>.</p>
+<p><code>rorcid</code> is a package developed by <a href="https://scottchamberlain.info/">Scott Chamberlain</a>, co-founder of <a href="https://ropensci.org/">rOpenSci</a>, to serve as an interface to the ORCID API. You can find more information about the API <a href="http://members.orcid.org/api/about-public-api">on the ORCID site</a>.</p>
 <p>Credit to Paul Oldham at <a href="https://www.pauloldham.net/introduction-to-orcid-with-rorcid/" class="uri">https://www.pauloldham.net/introduction-to-orcid-with-rorcid/</a> for inspiring some of the structure and ideas throughout this document. I highly recommend reading it.</p>
 <div id="setting-up-rorcid" class="section level2">
 <h2><span class="header-section-number">1.1</span> Setting up rorcid</h2>
-<p>If you haven’t done so already, create an ORCID account at <a href="https://orcid.org/signin" class="uri">https://orcid.org/signin</a>. If you have an ORCID but can’t remember it, search for your name at <a href="https://orcid.org" class="uri">https://orcid.org</a>. If you try to sign in with an email address already associated with an ORCID, you’ll be prompted to sign into the existing record. If you try to register with a different address, when you enter your name you’ll be asked to review existing records with that name and verify that none of them belong to you–<a href="https://support.orcid.org/hc/en-us/articles/360006972593-How-do-you-check-for-duplicate-ORCID-records-">see more on duplicate ORCID records</a>.</p>
-<p>First install and load the <code>rorcid</code> package in R. Also install <code>usethis</code> in order to set the API key, as well as <code>tidyverse</code>, which is a package that contains many packages we’ll use throughout.</p>
+<p>If you haven’t done so already, create an ORCID account at <a href="https://orcid.org/signin" class="uri">https://orcid.org/signin</a>. If you have an ORCID but can’t remember it, search for your name at <a href="https://orcid.org" class="uri">https://orcid.org</a>. If you try to sign in with an email address already associated with an ORCID, you’ll be prompted to sign into the existing record. If you try to register with a different address, when you enter your name you’ll be asked to review existing records with that name and verify that none of them belong to you–<a href="https://support.orcid.org/hc/en-us/articles/360006972593-How-do-you-check-for-duplicate-ORCID-records-">see more on duplicate ORCID records</a>. Make sure you have verified your email address.</p>
+<p>Next, install and load the <code>rorcid</code> package in R. Also install <code>usethis</code> in order to set the API key, as well as <code>tidyverse</code>, which is a package that contains many packages we’ll use throughout.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">&quot;rorcid&quot;</span>)</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">install.packages</span>(<span class="st">&quot;usethis&quot;</span>)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">install.packages</span>(<span class="st">&quot;tidyverse&quot;</span>)</a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">install.packages</span>(<span class="st">&quot;anytime&quot;</span>)</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(rorcid)</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(usethis)</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="kw">library</span>(anytime)</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="kw">library</span>(lubridate)</a></code></pre></div>
-<p>Next you need to authenticate with an ORCID API Key. According to the <a href="https://members.orcid.org/api/tutorial/read-orcid-records">ORCID API tutorial</a>, anyone can receive a key to access the public API.</p>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">install.packages</span>(<span class="st">&quot;httpuv&quot;</span>)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(rorcid)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">library</span>(usethis)</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="kw">library</span>(anytime)</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="kw">library</span>(lubridate)</a></code></pre></div>
+<p>Next, you need to authenticate with an ORCID API Key. According to the <a href="https://members.orcid.org/api/tutorial/read-orcid-records">ORCID API tutorial</a>, anyone can receive a key to access the public API.</p>
 <p>In R Studio, call:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">orcid_auth</span>()</a></code></pre></div>
-<p>You should see a message stating: <code>no ORCID token found; attempting OAuth authentication</code> and a window will open in your default internet browser. Log-in to your orcid account. If successful, the browser window will state: “Authentication complete. Please close this page and return to R.”</p>
-<p>Return to R Studio and you should see in your R console the word <strong>Bearer</strong>, followed by a long string of letters and numbers. These letters and numbers are your API key. At this point, this should be cached locally in your working directory.</p>
+<p>You should see a message stating: <code>no ORCID token found; attempting OAuth authentication</code> and a window will open in your default internet browser. Log-in to your orcid account. You will be asked to give <code>rorcid</code> authorization to access your ORCID Record for the purposes of getting your ORCID iD. Click “Authorize.”</p>
+<p>If successful, the browser window will state: “Authentication complete. Please close this page and return to R.” Return to R Studio and you should see in your R console the word <strong>Bearer</strong>, followed by a long string of letters and numbers. These letters and numbers are your API key. At this point, this should be cached locally in your working directory.</p>
 <p>Highlight and copy the API key (the letters and numbers only–exclude the word “Bearer” and the space). Now you can use the <code>edit_r_environ()</code> function from the <code>usethis</code> package to store the token in your R environment.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">usethis<span class="op">::</span><span class="kw">edit_r_environ</span>()</a></code></pre></div>
-<p>A new window will open in R Studio. Type <code>ORCID_TOKEN=&quot;my-token&quot;</code>, replacing <code>my-token</code> with the API key. Then press enter to create a new line, and leave it blank. It will look like something like this (below is a fake token):</p>
+<p>A new window will open in R Studio. Type <code>ORCID_TOKEN=&quot;my-token&quot;</code>, replacing <code>my-token</code> with the API key. <strong>Then press enter to create a new line, and leave it blank.</strong> It will look like something like this (below is a fake token):</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">ORCID_TOKEN=<span class="st">&quot;4bed1e13-7792-4129-9f07-aaf7b88ba88f&quot;</span></a></code></pre></div>
-<p>Press Ctrl/Cmd + S to save the API key to your R environment and close the window. The next time you start R, you won’t need to provide any authentication credentials. You can confirm this by calling <code>orcid_auth()</code>, and it will print the token.</p>
+<p>Press Ctrl/Cmd + S to save the API key to your R environment and close the window. In R Studio, click Session &gt; Restart R. Your token should now be saved to your R environment. You can confirm this by calling <code>orcid_auth()</code>, and it will print the token.</p>
 </div>
 </div>
-<div id="finding-orcid-ids-with-rorcidorcid" class="section level1">
-<h1><span class="header-section-number">2</span> Finding ORCID IDs with <code>rorcid::orcid()</code></h1>
+<div id="finding-oricid-ids-with-rorcidorcid" class="section level1">
+<h1><span class="header-section-number">2</span> Finding ORICID iDs with <code>rorcid::orcid()</code></h1>
 <p>The <code>rorcid::orcid()</code> function takes a query and returns a data frame of identifiers. As stated in the documentation for this function, the results are the identifiers only–in other words, no works or biographical information. There are other functions in the <code>rorcid</code> package that retrieve that data.</p>
 <div id="searching-by" class="section level2">
 <h2><span class="header-section-number">2.1</span> Searching by:</h2>
@@ -2380,7 +2381,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">carberry &lt;-<span class="st"> </span>rorcid<span class="op">::</span><span class="kw">orcid</span>(<span class="dt">query =</span> <span class="st">'josiah AND carberry'</span>)</a></code></pre></div>
 <p>One of his keywords is “psychoceramics” (the study of cracked pots):</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">carberry &lt;-<span class="st"> </span>rorcid<span class="op">::</span><span class="kw">orcid</span>(<span class="dt">query =</span> <span class="st">'josiah AND psychoceramics'</span>)</a></code></pre></div>
-<p>We can also use nested searches with <code>AND()</code>. Note the parentheses and no spaces. Carberry is a “professor” at Wesleyan and Brown:</p>
+<p>We can also use nested searches with <code>AND()</code>. Note the parentheses and no spaces. “Dr.” Carberry is a “professor” at Wesleyan and Brown:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">carberry &lt;-<span class="st"> </span>rorcid<span class="op">::</span><span class="kw">orcid</span>(<span class="dt">query =</span> <span class="st">'carberry AND(wesleyan OR brown)'</span>)</a></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>We can make our search more accurate and precise using fields. A list of fields is provided at <a href="https://members.orcid.org/api/tutorial/search-orcid-registry" class="uri">https://members.orcid.org/api/tutorial/search-orcid-registry</a>.</li>
@@ -2399,8 +2400,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The <code>janitor::clean_names()</code> function is connected to the <code>orcid()</code> function with something called a <a href="https://www.datacamp.com/community/tutorials/pipe-r-tutorial">Pipe Operator</a> <code>%&gt;%</code>. A pipe takes the output of one statement and makes it the input of the next statement. You can think of it as “then” in natural language. So the above script first runs the <code>orcid()</code> API call, then it clean the column names of the data that was pulled into R as a result of that call.</p>
 <p>What other fields can we search?</p>
 </div>
-<div id="orcid-id---orcid" class="section level3">
-<h3><span class="header-section-number">2.1.2</span> ORCID ID - <code>orcid:</code></h3>
+<div id="oricid-id---orcid" class="section level3">
+<h3><span class="header-section-number">2.1.2</span> ORICID iD - <code>orcid:</code></h3>
 <p>Of course, we can search by ORCID itself:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">carberry &lt;-<span class="st"> </span>rorcid<span class="op">::</span><span class="kw">orcid</span>(<span class="dt">query =</span> <span class="st">'orcid:0000-0002-1825-0097'</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb10-2" data-line-number="2"><span class="st">  </span>janitor<span class="op">::</span><span class="kw">clean_names</span>()</a></code></pre></div>
@@ -2445,7 +2446,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["orcid_identifier_uri"],"name":[1],"type":["chr"],"align":["left"]},{"label":["orcid_identifier_path"],"name":[2],"type":["chr"],"align":["left"]},{"label":["orcid_identifier_host"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"https://orcid.org/0000-0002-9260-8456","2":"0000-0002-9260-8456","3":"orcid.org","_rn_":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<p>This can also be helpful if you want to cast a very wide net and capture everyone at your institution with an ORCID ID.</p>
+<p>This can also be helpful if you want to cast a very wide net and capture everyone at your institution with an ORICID iD.</p>
 <p>I am going to add a <code>rows</code> argument to limit my results to 10 here, otherwise it will be a huge dataset:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">my_osu_orcids &lt;-<span class="st"> </span>rorcid<span class="op">::</span><span class="kw">orcid</span>(<span class="dt">query =</span> <span class="st">'ringgold-org-id:7618 OR email:*@okstate.edu OR</span></a>
 <a class="sourceLine" id="cb16-2" data-line-number="2"><span class="st">                               affiliation-org-name:&quot;Oklahoma State&quot;'</span>, <span class="dt">rows =</span> <span class="dv">10</span>) <span class="op">%&gt;%</span></a>
@@ -2467,7 +2468,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="finding-biographical-information-with-rorcidorcid_person" class="section level1">
 <h1><span class="header-section-number">3</span> Finding biographical information with <code>rorcid::orcid_person()</code></h1>
 <p>The <code>orcid()</code> function gets the IDs, but no information about the person. For that, you will need to use <code>orcid_person()</code>.</p>
-<p>Unlike <code>orcid()</code>, <code>orcid_person()</code> does not take a query; it accepts only ORCID IDs in the form XXXX-XXXX-XXXX-XXXX. So we can get the ORCID ID itself into it’s own vector. We can then pass that argument on to <code>orcid_person()</code>.</p>
+<p>Unlike <code>orcid()</code>, <code>orcid_person()</code> does not take a query; it accepts only ORICID iDs in the form XXXX-XXXX-XXXX-XXXX. So we can get the ORICID iD itself into it’s own vector. We can then pass that argument on to <code>orcid_person()</code>.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">carberry &lt;-<span class="st"> </span>rorcid<span class="op">::</span><span class="kw">orcid</span>(<span class="dt">query =</span> <span class="st">'given-names:josiah AND family-name:carberry'</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb18-2" data-line-number="2"><span class="st">  </span>janitor<span class="op">::</span><span class="kw">clean_names</span>()</a>
 <a class="sourceLine" id="cb18-3" data-line-number="3">carberry_orcid &lt;-<span class="st"> </span>carberry<span class="op">$</span>orcid_identifier_path</a>
@@ -2477,7 +2478,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">&quot;listviewer&quot;</span>)</a>
 <a class="sourceLine" id="cb19-2" data-line-number="2"><span class="kw">library</span>(listviewer)</a>
 <a class="sourceLine" id="cb19-3" data-line-number="3">listviewer<span class="op">::</span><span class="kw">jsonedit</span>(carberry_person)</a></code></pre></div>
-<p>Click the drop-down arrow next to the ORCID ID. This is a list containing lists of lists! Click the drop-down menu next to name and you will see 6 lists and two vectors.</p>
+<p>Click the drop-down arrow next to the ORICID iD. This is a list containing lists of lists! Click the drop-down menu next to name and you will see 6 lists and two vectors.</p>
 <div id="getting-the-data-into-a-data-frame" class="section level2">
 <h2><span class="header-section-number">3.1</span> Getting the data into a data frame</h2>
 <p>It’s not easy to get this into a nice, neat data frame. Here is one strategy to get some of the relevant data, using <code>map</code> functions from the <code>purrr</code> package and building a <code>tibble</code> (the tidyverse’s more efficient data frame) piece by piece.</p>
@@ -2604,9 +2605,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="getting-data-on-multiple-people-with-orcid_person" class="section level1">
 <h1><span class="header-section-number">5</span> Getting data on multiple people with <code>orcid_person()</code></h1>
-<div id="searching-by-orcid-ids" class="section level2">
-<h2><span class="header-section-number">5.1</span> Searching by ORCID IDs</h2>
-<p><code>orcid_person()</code> is vectorized, so you can pass in multiple ORCID IDs and it will return a list of results for each ID, with each element named by the ORCID ID.</p>
+<div id="searching-by-oricid-ids" class="section level2">
+<h2><span class="header-section-number">5.1</span> Searching by ORICID iDs</h2>
+<p><code>orcid_person()</code> is vectorized, so you can pass in multiple ORICID iDs and it will return a list of results for each ID, with each element named by the ORICID iD.</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">my_orcids &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;0000-0002-1825-0097&quot;</span>, <span class="st">&quot;0000-0002-9260-8456&quot;</span>)</a>
 <a class="sourceLine" id="cb35-2" data-line-number="2">my_orcid_person &lt;-<span class="st"> </span>rorcid<span class="op">::</span><span class="kw">orcid_person</span>(my_orcids)</a>
 <a class="sourceLine" id="cb35-3" data-line-number="3">listviewer<span class="op">::</span><span class="kw">jsonedit</span>(my_orcid_person)</a></code></pre></div>
@@ -2651,7 +2652,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 {"columns":[{"label":["FirstName"],"name":[1],"type":["chr"],"align":["left"]},{"label":["LastName"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"Josiah","2":"Carberry"},{"1":"Clarke","2":"Iakovakis"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<p>Now we can build a query that will work with the <code>given-names:</code> and <code>family-name:</code> arguments to <code>query</code> in <code>orcid</code> in order to get the ORCID IDs:</p>
+<p>Now we can build a query that will work with the <code>given-names:</code> and <code>family-name:</code> arguments to <code>query</code> in <code>orcid</code> in order to get the ORICID iDs:</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1">orcid_query &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;given-names:&quot;</span>,</a>
 <a class="sourceLine" id="cb38-2" data-line-number="2">                      profs<span class="op">$</span>FirstName,</a>
 <a class="sourceLine" id="cb38-3" data-line-number="3">                      <span class="st">&quot; AND family-name:&quot;</span>,</a>
@@ -2673,7 +2674,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" data-line-number="1">listviewer<span class="op">::</span><span class="kw">jsonedit</span>(my_orcids_list)</a></code></pre></div>
 <div id="htmlwidget-0b02af45b08e41f45e22" style="width:672px;height:480px;" class="jsonedit html-widget"></div>
 <script type="application/json" data-for="htmlwidget-0b02af45b08e41f45e22">{"x":{"data":{"orcid_identifier_uri":["https://orcid.org/0000-0002-1825-0097","https://orcid.org/0000-0002-9260-8456"],"orcid_identifier_path":["0000-0002-1825-0097","0000-0002-9260-8456"],"orcid_identifier_host":["orcid.org","orcid.org"]},"options":{"mode":"tree","modes":["code","form","text","tree","view"]}},"evals":[],"jsHooks":[]}</script>
-<p>This is a list of two items. We can flatten it to a data frame, grab the ORCID IDs, and run the same function we ran above in order to get the name data and the IDs into a single data frame:</p>
+<p>This is a list of two items. We can flatten it to a data frame, grab the ORICID iDs, and run the same function we ran above in order to get the name data and the IDs into a single data frame:</p>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1">my_orcids &lt;-<span class="st"> </span>my_orcids_list<span class="op">$</span>orcid_identifier_path</a>
 <a class="sourceLine" id="cb43-2" data-line-number="2">my_orcid_person &lt;-<span class="st"> </span>rorcid<span class="op">::</span><span class="kw">orcid_person</span>(my_orcids)</a>
 <a class="sourceLine" id="cb43-3" data-line-number="3">my_orcid_person_data &lt;-<span class="st"> </span>my_orcid_person <span class="op">%&gt;%</span><span class="st"> </span>{</a>
@@ -2725,8 +2726,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">6</span> Getting Works with <code>rorcid::works()</code> and <code>rorcid::orcid_works()</code></h1>
 <div id="getting-works-for-an-individual" class="section level2">
 <h2><span class="header-section-number">6.1</span> Getting works for an individual</h2>
-<p>There are two functions in <code>rorcid</code> to get all of the works associated with an ORCID ID: <code>orcid_works()</code> and <code>works()</code>. The main difference between these is <code>orcid_works()</code> returns a list, with each work as a list item, and each external identifier (e.g. ISSN, DOI) also as a list item. On the other hand, <code>works()</code> returns a nice, neat data frame that can be easily exported to a CSV.</p>
-<p>Like <code>orcid_person()</code>, these functions require an ORCID ID, and do not use the query fields we saw with the <code>orcid()</code> function.</p>
+<p>There are two functions in <code>rorcid</code> to get all of the works associated with an ORICID iD: <code>orcid_works()</code> and <code>works()</code>. The main difference between these is <code>orcid_works()</code> returns a list, with each work as a list item, and each external identifier (e.g. ISSN, DOI) also as a list item. On the other hand, <code>works()</code> returns a nice, neat data frame that can be easily exported to a CSV.</p>
+<p>Like <code>orcid_person()</code>, these functions require an ORICID iD, and do not use the query fields we saw with the <code>orcid()</code> function.</p>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" data-line-number="1">carberry_orcid &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;0000-0002-1825-0097&quot;</span>)</a>
 <a class="sourceLine" id="cb46-2" data-line-number="2">carberry_works &lt;-<span class="st"> </span>rorcid<span class="op">::</span><span class="kw">works</span>(carberry_orcid) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb46-3" data-line-number="3"><span class="st">  </span>janitor<span class="op">::</span><span class="kw">clean_names</span>() <span class="op">%&gt;%</span></a>
@@ -2760,7 +2761,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="getting-works-for-multiple-people" class="section level2">
 <h2><span class="header-section-number">6.2</span> Getting works for multiple people</h2>
-<p><code>orcid::works()</code> is not vectorized, meaning, if you have multiple ORCID IDs, you can’t use it. Instead, you have to pass them to the <code>orcid::orcid_works()</code> function.</p>
+<p><code>orcid::works()</code> is not vectorized, meaning, if you have multiple ORICID iDs, you can’t use it. Instead, you have to pass them to the <code>orcid::orcid_works()</code> function.</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" data-line-number="1">my_orcids &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;0000-0002-1825-0097&quot;</span>, <span class="st">&quot;0000-0002-9260-8456&quot;</span>, <span class="st">&quot;0000-0002-2771-9344&quot;</span>)</a>
 <a class="sourceLine" id="cb48-2" data-line-number="2">my_works &lt;-<span class="st"> </span>rorcid<span class="op">::</span><span class="kw">orcid_works</span>(my_orcids) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb48-3" data-line-number="3"><span class="st">  </span>janitor<span class="op">::</span><span class="kw">clean_names</span>()</a>
