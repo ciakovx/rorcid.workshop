@@ -23,6 +23,16 @@ library(tibble)
 library(prettydoc)
 ```
 
+# Downloading R & R Studio
+
+To download R, go to <https://www.r-project.org/>. Click on CRAN (Comprehensive R Archive Network) under Download, and scroll down to your country. Select the download link corresponding to the city that is geographically closest to you.
+
+RStudio is a user interface for working with R. It is called an Integrated Development Environment (IDE)[^5] and acts as a sort of wrapper around the R language. You can use R without RStudio, but it's much more limiting. RStudio makes it easier to import datasets, create and write scripts, and has an autocomplete activated for functions and variables you've already assigned. RStudio makes using R much more effective, and is also free and open source.
+
+Go to <https://www.rstudio.com/products/RStudio/#Desktop> to download the RStudio desktop software.
+
+There are other IDEs such as [Microsoft R Open](https://mran.microsoft.com/open) and [Notepad ++](https://notepad-plus-plus.org/). Experiment with one that is right for you.
+
 # `rorcid`
 
 `rorcid` is a package developed by [Scott Chamberlain](https://scottchamberlain.info/), co-founder of [rOpenSci](https://ropensci.org/), to serve as an interface to the ORCID API. You can find more information about the API [on the ORCID site](http://members.orcid.org/api/about-public-api).
