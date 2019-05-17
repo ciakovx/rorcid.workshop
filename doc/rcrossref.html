@@ -323,6 +323,13 @@ $(document).ready(function () {
 </div>
 
 
+<div id="downloading-r-r-studio" class="section level1">
+<h1>Downloading R &amp; R Studio</h1>
+<p>To download R, go to <a href="https://www.r-project.org/" class="uri">https://www.r-project.org/</a>. Click on CRAN (Comprehensive R Archive Network) under Download, and scroll down to your country. Select the download link corresponding to the city that is geographically closest to you.</p>
+<p>RStudio is a user interface for working with R. It is called an Integrated Development Environment (IDE) and acts as a sort of wrapper around the R language. You can use R without RStudio, but it’s much more limiting. RStudio makes it easier to import datasets, create and write scripts, and has an autocomplete activated for functions and variables you’ve already assigned. RStudio makes using R much more effective, and is also free and open source.</p>
+<p>Go to <a href="https://www.rstudio.com/products/RStudio/#Desktop" class="uri">https://www.rstudio.com/products/RStudio/#Desktop</a> to download the RStudio desktop software.</p>
+<p>There are other IDEs such as <a href="https://mran.microsoft.com/open">Microsoft R Open</a> and <a href="https://notepad-plus-plus.org/">Notepad ++</a>. Experiment with one that is right for you.</p>
+</div>
 <div id="rcrossref" class="section level1">
 <h1><code>rcrossref</code></h1>
 <p><code>crossref</code> is a package developed by <a href="https://scottchamberlain.info/">Scott Chamberlain</a>, Hao Zhu, Najko Jahn, Carl Boettiger, and Karthik Ram, part of the <a href="http://ropensci.org/">rOpenSci</a> set of packages. It serves as an interface to the Crossref API.</p>
@@ -334,6 +341,12 @@ $(document).ready(function () {
 <li>Tutorials</li>
 <li>rOpenSci <a href="https://ropensci.org/tutorials/rcrossref_tutorial/">rcrossref tutorial</a></li>
 <li>Paul Oldham: <a href="https://poldham.github.io/abs/crossref.html">“Accessing the Scientific Literature with Crossref”</a></li>
+<li><a href="https://cran.r-project.org/web/packages/rcrossref/vignettes/crossref_vignette.html">rcrossref vignette</a></li>
+<li><a href="https://github.com/rstudio/cheatsheets">R cheat sheets</a></li>
+<li><a href="https://github.com/rstudio/cheatsheets/blob/master/base-r.pdf">base R cheat sheet</a></li>
+<li><a href="https://github.com/rstudio/cheatsheets/blob/master/purrr.pdf">purrr cheat sheet</a></li>
+<li><a href="https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf">data transformation cheat sheet</a></li>
+<li><a href="https://github.com/rstudio/cheatsheets/blob/master/data-import.pdf">data import cheat sheet</a></li>
 </ul>
 <div id="setting-up-rcrossref" class="section level2">
 <h2>Setting up <code>rcrossref</code></h2>
@@ -347,158 +360,6 @@ library(tidyverse)</code></pre>
 <p>As described in the documentation, the Crossref team encourages requests with appropriate contact information, and will forward you to a dedicated API cluster for improved performance when you share your email with them. Learn more <a href="https://github.com/CrossRef/rest-api-doc#good-manners--more-reliable-service">here</a>. To do so, first open your R environment using the <code>edit_r_environ()</code> function from the <code>usethis</code> package.</p>
 <pre class="r"><code>usethis::edit_r_environ()</code></pre>
 <p>A new window will open in R Studio. Type <code>crossref_email=name@example.com</code>, using your own email address. Then press enter to create a new line, and leave it blank. Press Ctrl/Cmd + S to save the API key to your R environment and close the window. Your email address will now be shared with Crossref.</p>
-</div>
-</div>
-<div id="getting-citation-data-with-cr_cn" class="section level1">
-<h1>Getting citation data with <code>cr_cn()</code></h1>
-<p>One of the best and easiest use cases for <code>rcrossref</code> is inputting a set of DOIs and getting back the citation data in multiple formats. I am not talking about a list of articles that are cited in a given bibliography, nor what articles have cited the article in question, but rather a styled reference that you can input into a bibliography.</p>
-<p>We start by assigning our DOIs to a variable <code>my_dois</code>:</p>
-<pre class="r"><code>my_dois &lt;- c(&quot;10.5281/zenodo.8381&quot;, &quot;10.1038/d41586-018-00104-7&quot;, 
-             &quot;10.3389/fpsyg.2018.01487&quot;, &quot;10.12688/f1000research.8460.3&quot;)</code></pre>
-<div id="getting-formatted-references-in-a-text-file" class="section level2">
-<h2>Getting formatted references in a text file</h2>
-<p>We can use the <code>cr_cn()</code> function from the <code>rcrossref</code> package to get the citations to those articles back in the style you specify.</p>
-<pre class="r"><code>my_citations &lt;- cr_cn(my_dois, format = &quot;text&quot;, style = &quot;apa&quot;)
-my_citations</code></pre>
-<pre><code>## [[1]]
-## [1] &quot;Frosio, G., &amp;amp; Derclaye, E. (2014). Open Access Publishing: A Literature Review. &lt;i&gt;Zenodo&lt;/i&gt;. https://doi.org/10.5281/zenodo.8381&quot;
-## 
-## [[2]]
-## [1] &quot;Shotton, D. (2018). Funders should mandate open citations. Nature, 553(7687), 129–129. doi:10.1038/d41586-018-00104-7&quot;
-## 
-## [[3]]
-## [1] &quot;Paulus, F. M., Cruz, N., &amp; Krach, S. (2018). The Impact Factor Fallacy. Frontiers in Psychology, 9. doi:10.3389/fpsyg.2018.01487&quot;
-## 
-## [[4]]
-## [1] &quot;Tennant, J. P., Waldner, F., Jacques, D. C., Masuzzo, P., Collister, L. B., &amp; Hartgerink, C. H. J. (2016). The academic, economic and societal impacts of Open Access: an evidence-based review. F1000Research, 5, 632. doi:10.12688/f1000research.8460.3&quot;</code></pre>
-<p>This returns each citation into a list element see this <a href="https://campus.datacamp.com/courses/abc-intro-2-r/data-structures?ex=9">datacamp tutorial</a> on lists in R). We can use the <code>map_chr</code> and the <code>pluck</code> functions from <code>purrr</code> to instead assign them to a character vector.</p>
-<pre class="r"><code>my_citations_map &lt;- my_citations %&gt;% 
-  purrr::map_chr(., purrr::pluck, 1)
-my_citations_map</code></pre>
-<pre><code>## [1] &quot;Frosio, G., &amp;amp; Derclaye, E. (2014). Open Access Publishing: A Literature Review. &lt;i&gt;Zenodo&lt;/i&gt;. https://doi.org/10.5281/zenodo.8381&quot;                                                                                                                   
-## [2] &quot;Shotton, D. (2018). Funders should mandate open citations. Nature, 553(7687), 129–129. doi:10.1038/d41586-018-00104-7&quot;                                                                                                                                    
-## [3] &quot;Paulus, F. M., Cruz, N., &amp; Krach, S. (2018). The Impact Factor Fallacy. Frontiers in Psychology, 9. doi:10.3389/fpsyg.2018.01487&quot;                                                                                                                         
-## [4] &quot;Tennant, J. P., Waldner, F., Jacques, D. C., Masuzzo, P., Collister, L. B., &amp; Hartgerink, C. H. J. (2016). The academic, economic and societal impacts of Open Access: an evidence-based review. F1000Research, 5, 632. doi:10.12688/f1000research.8460.3&quot;</code></pre>
-<p>You can then write this to a text file. If you’re using the below code, replace “MyUserName” below with your actual user name to write this file to your desktop. You can get your username by calling <code>Sys.getenv(&quot;USERNAME&quot;)</code>. Or you can change your directory altogether with the <code>setwd()</code> function.</p>
-<pre class="r"><code>write(my_citations_map, file = &quot;C:/Users/MyUserName/Desktop/my_citations.txt&quot;)</code></pre>
-<p>The <code>purrr::map_chr</code> function is connected to <code>my_citations</code> with something called a <a href="https://www.datacamp.com/community/tutorials/pipe-r-tutorial">Pipe Operator</a> <code>%&gt;%</code>. We will be using this operator throughout the tutorial. A pipe takes the output of one statement and makes it the input of the next statement. You can think of it as “then” in natural language. So the above script first takes the <code>my_citations</code> data, then it applies the set of functions specified..</p>
-<p>The above is helpful if you need to paste the references somewhere, and there are loads of other citation styles included in <code>rcrossref</code>–view them by calling <code>rcrossref::get_styles()</code> and it will print the list to your console. I’ll just print the first 15 below:</p>
-<pre class="r"><code>rcrossref::get_styles()[1:15] %&gt;%
-  knitr::kable() %&gt;%
-  kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;), full_width = F, fixed_thead = T, position = &quot;center&quot;)</code></pre>
-<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-x
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-academy-of-management-review
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-accident-analysis-and-prevention
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-aci-materials-journal
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acm-sig-proceedings-long-author-list
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acm-sig-proceedings
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acm-sigchi-proceedings-extended-abstract-format
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acm-sigchi-proceedings
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acm-siggraph
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acme-an-international-journal-for-critical-geographies
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acta-amazonica
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acta-anaesthesiologica-scandinavica
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acta-anaesthesiologica-taiwanica
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acta-chirurgiae-orthopaedicae-et-traumatologiae-cechoslovaca
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acta-naturae
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-acta-neurobiologiae-experimentalis
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="getting-formatted-references-in-a-bibtex-or-ris-file" class="section level2">
-<h2>Getting formatted references in a BibTeX or RIS file</h2>
-<p>You’ll notice that some of the formatting on these is inconsistent (for instance, there are some encoding issues). So rather than There are other format options if you are using BibTeX, Zotero or another reference management tool. Below is an example with BibTeX; again, map it before you write it to file.</p>
-<pre class="r"><code>my_citations_bibtex &lt;- cr_cn(my_dois, format = &quot;bibtex&quot;) %&gt;%
-  purrr::map_chr(., purrr::pluck, 1)</code></pre>
-<p>Write it to a bib file using <code>write_lines()</code> from the <code>readr</code> package. Remember to replace MyUserName with your own user name, which you can get from running <code>Sys.getenv(&quot;USERNAME&quot;)</code>. Or just create a directory and use that.</p>
-<pre class="r"><code>readr::write_lines(my_citations_bibtex, &quot;C:/Users/MyUserName/Desktop/my_citations.bib&quot;)</code></pre>
-<p>Same with RIS files. Here we make a <code>tibble</code> so it will save to an RIS file.</p>
-<pre class="r"><code>my_citations_ris &lt;- cr_cn(my_dois, format = &quot;ris&quot;) %&gt;%
-  purrr::map_chr(., purrr::pluck, 1) %&gt;%
-  tibble::tibble()</code></pre>
-<p>Use <code>write_csv()</code> from <code>readr</code> to write the RIS file.</p>
-<pre class="r"><code>readr::write_csv(my_citations_ris, &quot;C:/Users/clakova/Desktop/my_citations.ris&quot;)</code></pre>
-<p>You can now import either the BibTeX file or the RIS file into your reference management software.</p>
-</div>
-<div id="using-a-csv-of-dois" class="section level2">
-<h2>Using a CSV of DOIs</h2>
-<p>If you have a CSV file of DOIs, you can read that into R using the <code>read_csv()</code> function from the <a href="https://readr.tidyverse.org/"><code>readr</code></a> package (which was loaded when you called <code>library(tidyverse)</code> above). If you have an Excel file, you can calling <code>library(readxl)</code> package and use the <a href="https://readxl.tidyverse.org/"><code>read_excel()</code></a> package.</p>
-</div>
-<div id="rstudio-add-in" class="section level2">
-<h2>RStudio Add-In</h2>
-<p>As described in the <a href="https://cran.r-project.org/web/packages/rcrossref/rcrossref.pdf">documentation</a>, <code>rcrossref</code> installs an add-in to RStudio:</p>
-<blockquote>
-<p>On installation of rcrossref you get an RStudio Addin. To use the Addin, go to the top toolbar &gt; Tools &gt; Addins &gt; Add Crossref Citations. You’ll get a window pop up that you can put in DOIs for. If the DOI is found, the bibtex citations will be added to a file called crossref.bib. New citations will be appended to that file. Addin authored by Hao Zhu (<a href="https://github.com/haozhu233" class="uri">https://github.com/haozhu233</a>)</p>
-</blockquote>
-<p>Check out the <code>RefManageR</code> package for more you can do with citation files in R.</p>
 </div>
 </div>
 <div id="getting-publications-from-journals-with-cr_journals" class="section level1">
@@ -561,37 +422,56 @@ jeslib_details</code></pre>
 </div>
 <div id="getting-publications-by-issn" class="section level2">
 <h2>Getting publications by ISSN</h2>
-<p>We will use the <code>jeslib_issn</code> value in the <code>issn =</code> argument. We set the <code>limit</code> to 25, meaning we’ll only get back 10 articles per ISSN. We also set the <code>works</code> to <code>TRUE</code>, in order to get the publications themselves rather than data about the journal. The max limit is 1000.</p>
+<p>We will use the <code>jeslib_issn</code> value in the <code>issn =</code> argument to <code>cr_journals.</code> We set the <code>limit</code> to 25, meaning we’ll only get back 25 articles tops. We also set the <code>works</code> to <code>TRUE</code>, in order to get the publications themselves rather than data about the journal, as we did above. The max limit is 1000.</p>
 <pre class="r"><code>jeslib_publications &lt;- rcrossref::cr_journals(issn = jeslib_issn, works = T, limit = 25) %&gt;%
-  purrr::pluck(&quot;data&quot;)</code></pre>
+  purrr::pluck(&quot;data&quot;)
+jeslib_publications</code></pre>
+<pre><code>## # A tibble: 25 x 20
+##    container.title created deposited doi   indexed issn  issue issued
+##    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; 
+##  1 Journal of eSc~ 2013-0~ 2018-02-~ 10.7~ 2019-0~ 2161~ 3     2012  
+##  2 Journal of eSc~ 2013-0~ 2018-02-~ 10.7~ 2019-0~ 2161~ 3     2012  
+##  3 Journal of eSc~ 2013-0~ 2018-02-~ 10.7~ 2019-0~ 2161~ 3     2012  
+##  4 Journal of eSc~ 2013-0~ 2018-02-~ 10.7~ 2019-0~ 2161~ 3     2012  
+##  5 Journal of eSc~ 2013-0~ 2018-02-~ 10.7~ 2019-0~ 2161~ 3     2012  
+##  6 Journal of eSc~ 2013-0~ 2013-05-~ 10.7~ 2019-0~ 2161~ 1     2013  
+##  7 Journal of eSc~ 2013-0~ 2013-05-~ 10.7~ 2019-0~ 2161~ 1     2013  
+##  8 Journal of eSc~ 2013-0~ 2013-05-~ 10.7~ 2019-0~ 2161~ 1     2013  
+##  9 Journal of eSc~ 2013-0~ 2013-05-~ 10.7~ 2019-0~ 2161~ 1     2013  
+## 10 Journal of eSc~ 2013-0~ 2013-05-~ 10.7~ 2019-0~ 2161~ 1     2013  
+## # ... with 15 more rows, and 12 more variables: member &lt;chr&gt;, page &lt;chr&gt;,
+## #   prefix &lt;chr&gt;, publisher &lt;chr&gt;, reference.count &lt;chr&gt;, score &lt;chr&gt;,
+## #   source &lt;chr&gt;, title &lt;chr&gt;, type &lt;chr&gt;, url &lt;chr&gt;, volume &lt;chr&gt;,
+## #   author &lt;list&gt;</code></pre>
 <p>You can also pass multiple ISSNs to <code>cr_journals</code>. Here we create a new vector <code>my_issns</code> using the <code>c()</code> function. These are ISSNs for the <em>Journal of American History</em> and <em>JAMA: The Journal of the American Medical Association</em>.</p>
-<pre class="r"><code>my_issns &lt;- c('0021-8723', '1538-3598')
-my_journals &lt;- rcrossref::cr_journals(issn = my_issns, works = T, limit = 10) %&gt;%
+<pre class="r"><code>jama_issn &lt;- '1538-3598'
+jah_issn &lt;- '0021-8723'
+my_journals &lt;- rcrossref::cr_journals(issn = c(jama_issn, jah_issn), works = T, limit = 10) %&gt;%
   purrr::pluck(&quot;data&quot;)
 my_journals</code></pre>
 <pre><code>## # A tibble: 20 x 22
 ##    container.title created deposited doi   indexed issn  issue issued
 ##    &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; 
-##  1 The Journal of~ 2006-0~ 2017-08-~ 10.2~ 2019-0~ 0021~ 2     1973-~
-##  2 The Journal of~ 2006-0~ 2017-08-~ 10.2~ 2019-0~ 0021~ 4     1969-~
-##  3 Journal of Ame~ 2013-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 2     2013-~
-##  4 Journal of Ame~ 2014-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 4     2014-~
-##  5 The Journal of~ 2006-0~ 2017-08-~ 10.2~ 2019-0~ 0021~ 1     1997-~
-##  6 The Journal of~ 2008-0~ 2017-08-~ 10.2~ 2019-0~ 0021~ 3     2002-~
-##  7 Journal of Ame~ 2013-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 4     2013-~
-##  8 Journal of Ame~ 2013-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 4     2013-~
-##  9 Journal of Ame~ 2013-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 4     2013-~
-## 10 Journal of Ame~ 2013-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 4     2013-~
-## 11 JAMA: The Jour~ 2003-0~ 2011-03-~ 10.1~ 2019-0~ 0098~ 9     1970-~
-## 12 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 14    1984-~
-## 13 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 8     1968-~
-## 14 JAMA: The Jour~ 2003-0~ 2007-02-~ 10.1~ 2019-0~ 0098~ 19    1990-~
-## 15 JAMA: The Jour~ 2003-0~ 2011-07-~ 10.1~ 2019-0~ 0098~ 15    1983-~
-## 16 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 24    1994-~
-## 17 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 19    1987-~
-## 18 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 2     1975-~
-## 19 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 7     1996-~
-## 20 JAMA: The Jour~ 2003-0~ 2007-02-~ 10.1~ 2019-0~ 0098~ 23    1985-~
+##  1 JAMA: The Jour~ 2003-0~ 2011-03-~ 10.1~ 2019-0~ 0098~ 9     1970-~
+##  2 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 14    1984-~
+##  3 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 8     1968-~
+##  4 JAMA: The Jour~ 2003-0~ 2007-02-~ 10.1~ 2019-0~ 0098~ 19    1990-~
+##  5 JAMA: The Jour~ 2003-0~ 2011-07-~ 10.1~ 2019-0~ 0098~ 15    1983-~
+##  6 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 24    1994-~
+##  7 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 19    1987-~
+##  8 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 2     1975-~
+##  9 JAMA: The Jour~ 2003-0~ 2011-08-~ 10.1~ 2019-0~ 0098~ 7     1996-~
+## 10 JAMA: The Jour~ 2003-0~ 2007-02-~ 10.1~ 2019-0~ 0098~ 23    1985-~
+## 11 The Journal of~ 2006-0~ 2017-08-~ 10.2~ 2019-0~ 0021~ 2     1973-~
+## 12 The Journal of~ 2006-0~ 2017-08-~ 10.2~ 2019-0~ 0021~ 4     1969-~
+## 13 Journal of Ame~ 2013-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 2     2013-~
+## 14 Journal of Ame~ 2014-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 4     2014-~
+## 15 The Journal of~ 2006-0~ 2017-08-~ 10.2~ 2019-0~ 0021~ 1     1997-~
+## 16 The Journal of~ 2008-0~ 2017-08-~ 10.2~ 2019-0~ 0021~ 3     2002-~
+## 17 Journal of Ame~ 2013-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 4     2013-~
+## 18 Journal of Ame~ 2013-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 4     2013-~
+## 19 Journal of Ame~ 2013-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 4     2013-~
+## 20 Journal of Ame~ 2013-0~ 2017-08-~ 10.1~ 2019-0~ 0021~ 4     2013-~
 ## # ... with 14 more variables: member &lt;chr&gt;, page &lt;chr&gt;, prefix &lt;chr&gt;,
 ## #   publisher &lt;chr&gt;, reference.count &lt;chr&gt;, score &lt;chr&gt;, source &lt;chr&gt;,
 ## #   title &lt;chr&gt;, type &lt;chr&gt;, url &lt;chr&gt;, volume &lt;chr&gt;, author &lt;list&gt;,
@@ -600,7 +480,7 @@ my_journals</code></pre>
 </div>
 <div id="filtering-the-query-with-the-filter-argument" class="section level2">
 <h2>Filtering the query with the <code>filter</code> argument</h2>
-<p>You can use the <code>filter</code> argument to specify some parameters. See the available filters by calling <code>rcrossref::filter_names()</code>, and details by calling <code>rcrossref::filter_details</code>. I reproduce the data below, but it’s also in <a href="https://github.com/CrossRef/rest-api-doc#filter-names">the API documentation</a></p>
+<p>You can use the <code>filter</code> argument to specify some parameters. See the available filters by calling <code>rcrossref::filter_names()</code>, and details by calling <code>rcrossref::filter_details</code>. I reproduce that data below, and it’s also in <a href="https://github.com/CrossRef/rest-api-doc#filter-names">the API documentation</a></p>
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1311,18 +1191,19 @@ metadata where online published date is since (inclusive) {date}
 </tr>
 </tbody>
 </table>
-<div id="filtering-by-year-of-publication" class="section level3">
-<h3>Filtering by year of publication</h3>
+<div id="filtering-by-publication-date-with-from_pub_date-and-until_pub_date" class="section level3">
+<h3>Filtering by publication date with <code>from_pub_date</code> and <code>until_pub_date</code></h3>
 <p>For example, you may be interested in publications only from a given year, or within a date range. Remember to increase the limit if you need to. Also notice three things about the <code>filter</code> argument:</p>
 <ul>
 <li>The query parameter is in backticks (the key next to the 1 on the keyboard)</li>
 <li>The query itself is in single quotes</li>
 <li>The whole thing is wrapped in <code>c()</code></li>
 </ul>
+<p>You can also use <code>until_pub_date</code>. See the above table for other dates, including online publication date, print publication date, posted date, and accepted date.</p>
 </div>
-<div id="filtering-by-license" class="section level3">
-<h3>Filtering by license</h3>
-<p>You may be interested in licensing information for articles; for instance, the proportion of articles in a given journal that are Creative Commons licensed. First run <code>cr_journals</code> with <code>works</code> set to <code>FALSE</code> in order to see if the publisher even sends licensing information to Crossref. We will use PLOS ONE as an example.</p>
+<div id="filtering-by-license-with-has_license" class="section level3">
+<h3>Filtering by license with <code>has_license</code></h3>
+<p>You may be interested in licensing information for articles; for instance, the proportion of articles in a given journal that are Creative Commons licensed. First run <code>cr_journals</code> with <code>works</code> set to <code>FALSE</code> in order to get journal details and check if the publisher even sends licensing information to Crossref. We will use PLOS ONE as an example.</p>
 <pre><code>## [1] TRUE</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <p>We can see that <code>deposits_licenses_backfile</code> is <code>TRUE</code> and <code>deposits_licenses_current</code> is also <code>TRUE</code>, meaning PLOS ONE does send licensing information and it is current. We can now set <code>works = TRUE</code>, and set the <code>has_license</code> to <code>TRUE</code>. This will therefore return only articles that have license information. We will set our <code>limit</code> to 25.</p>
@@ -1330,9 +1211,12 @@ metadata where online published date is since (inclusive) {date}
 <p>This adds four columns: <strong>date</strong> (Date on which this license begins to take effect), <strong>URL</strong> (Link to a web page describing this license–in this case, Creative Commons), <strong>delay in days</strong> (Number of days between the publication date of the work and the start date of this license), and <strong>content.version</strong>, which specifies the version of the article the licensing data pertains to (VOR = Version of Record, AM = Accepted Manuscript, TDM = Text and Data Mining), .</p>
 </div>
 </div>
-<div id="getting-citation-data-with-cr_citation_count" class="section level2">
-<h2>Getting citation data with <code>cr_citation_count</code></h2>
-<p>Citation counts per article are not returned with <code>cr_journals</code>, but you can get them with <code>cr_citation_count</code>:</p>
+<div id="getting-more-than-1000-results-cursor" class="section level2">
+<h2>Getting more than 1000 results <code>cursor</code></h2>
+<p>The , we have to use the <code>cursor</code> argument. Here we will look at the journal Philosophical Transactions. We run <code>cr_journals</code> with <code>works</code> set to <code>FALSE</code> in order to get the journal details, specifically to find out how many articles from this journal are indexed in Crossref.</p>
+<pre><code>## [1] 8534</code></pre>
+<p>Because there are 8,534 articles, we need to pass the <code>cursor</code> argument to <code>cr_journals</code>. As described by <a href="https://poldham.github.io/abs/crossref.html">Paul Oldham</a>, “the CrossRef API also permits deep paging (fetching results from multiple pages). We can retrieve all the results by setting the cursor to the wildcard * and the cursor_max to the total results. Note that the cursor and the cursor_max arguments must appear together for this to work. Because it can take a while to retrieve the results we will add a progress bar using .progress to indicate how far along the query is.”</p>
+<p>Here I will set the limit to 1,500 rather than collect the entire 8,534.</p>
 </div>
 <div id="field-queries" class="section level2">
 <h2>Field queries</h2>
@@ -1352,17 +1236,29 @@ metadata where online published date is since (inclusive) {date}
   purrr::pluck(&quot;data&quot;)</code></pre>
 </div>
 </div>
-</div>
-<div id="maybe-under-cr_works" class="section level1">
-<h1>maybe under cr_works?</h1>
-<pre class="r"><code>my_citations &lt;- c(&quot;Björk B. 2016a. Hybrid open access—a longitudinal study. Journal of Informetrics 10(4):919–932 DOI 10.1016/j.joi.2016.08.002.&quot;, 
-                  &quot;Laakso M, Welling P, Bukvova H, Nyman L, Björk BC, Hedlund T. 2011. The development of open access journal publishing from 1993 to 2009. PLOS ONE 6(6):e20961 DOI 10.1371/journal.pone.0020961.&quot;, 
-                  &quot;Tennant JP, Waldner F, Jacques DC, Masuzzo P, Collister LB, Hartgerink CH. 2016. The academic, economic and societal impacts of Open Access: an evidence-based review. F1000 Research 5:Article 632 DOI 10.12688/f1000research.8460.3.&quot;)</code></pre>
 <div id="unnesting-list-columns" class="section level2">
 <h2>Unnesting list columns</h2>
-<p>Authors, links, licenses, and funders appear in nested lists within the <code>my_journals</code> data frame because there can be, and often are, multiple of each of these items per article.</p>
-<p>These can normally be easily unnested using the <code>unnest()</code> function from the <code>tidyr</code> package. However it throws an error if there are NULL values in the column. It looks like the <code>tidyr</code> developer is currently <a href="https://github.com/tidyverse/tidyr/issues/436">working to allow NULL while unnesting</a> but until then, we replace the NULL values with empty tibbles using the <code>replace_na()</code> function from <code>tidyr</code>. There is probably a more elegant solution but this will do for now. I use <code>mutate()</code> from</p>
-<pre class="r"><code>my_journals_clean &lt;- my_journals %&gt;%
+<p>Authors, links, licenses, funders, and some other values can appear in nested lists when you call <code>cr_journals</code> because there can be, and often are, multiple of each of these items per article. Our <code>my_journals</code> data frame has nested lists for <strong>author</strong> and <strong>link</strong>. You can check all column data classes by running <code>typeof</code> across all columns using the <code>map_chr()</code> function from <code>purrr</code>:</p>
+<pre class="r"><code>purrr::map_chr(my_journals, typeof)</code></pre>
+<pre><code>## container.title         created       deposited             doi 
+##     &quot;character&quot;     &quot;character&quot;     &quot;character&quot;     &quot;character&quot; 
+##         indexed            issn           issue          issued 
+##     &quot;character&quot;     &quot;character&quot;     &quot;character&quot;     &quot;character&quot; 
+##          member            page          prefix       publisher 
+##     &quot;character&quot;     &quot;character&quot;     &quot;character&quot;     &quot;character&quot; 
+## reference.count           score          source           title 
+##     &quot;character&quot;     &quot;character&quot;     &quot;character&quot;     &quot;character&quot; 
+##            type             url          volume          author 
+##     &quot;character&quot;     &quot;character&quot;     &quot;character&quot;          &quot;list&quot; 
+##            link         subject 
+##          &quot;list&quot;     &quot;character&quot;</code></pre>
+<p>These can normally be easily unnested using the <code>unnest()</code> function from the <code>tidyr</code> package. However it throws an error if there are NULL values in the column. It looks like the <code>tidyr</code> developer is currently <a href="https://github.com/tidyverse/tidyr/issues/436">working to allow NULL while unnesting</a> but until then, we replace the <code>NULL</code> values with empty tibbles using the <code>replace_na()</code> function from <code>tidyr</code>.</p>
+<p>The simplest option is to remove rows with <code>NULL</code> values using the <code>drop_na()</code> function from <code>tidyr</code>. The problem is, this will remove a lot.</p>
+<pre class="r"><code>my_journals_clean1 &lt;- my_journals %&gt;%
+  drop_na(author) %&gt;%
+  unnest(author)</code></pre>
+<p>Another option is to use <code>mutate</code> to add in a <code>tibble</code> with the same column names as the other authors, with the values set to <code>NA</code> rather than <code>NULL</code>.</p>
+<pre class="r"><code>my_journals_clean2 &lt;- my_journals %&gt;%
   dplyr::mutate(author = tidyr::replace_na(author, list(dplyr::tibble(given = NA,
                                                                       family = NA,
                                                                       sequence = NA)))) %&gt;%
@@ -1372,17 +1268,272 @@ metadata where online published date is since (inclusive) {date}
                                                                   intended.application = NA))))
 # need to add license and funder here. Probably should filter these out but oh well.</code></pre>
 <p>This allows us to <code>unnest</code> one or both of those columns. In other words, when we unnest author, we will see an additional row added for each variable with multiple authors. We will also see three new columns added: <strong>given</strong> (first name), <strong>family</strong> (last name), and <strong>sequence</strong> (first or additional). All data for these rows will be duplicated except for the author.</p>
-<pre class="r"><code>my_journals_author &lt;- my_journals_clean %&gt;%
-  unnest(author)</code></pre>
+<pre class="r"><code>my_journals_author &lt;- my_journals_clean2 %&gt;%
+  tidyr::unnest(author)</code></pre>
 <p>At the time this data was pulled, we now have 24 observations of 24 variables rather than 20 observations of 23 variables. Looking closely at the data, we can see that all articles had a single author except for two of them (8 and 9), which had three each. Thus four new rows were added for those articles.</p>
-<p>It is important to point out that there is an argument to <code>unnest()</code> called <code>.drop</code>, which is set to <code>TRUE</code> by default, meaning all additional list columns will be dropped. So here, when we unnest <strong>author,</strong> <strong>link</strong> is dropped as well. If you want to keep it, just set it to <code>FALSE</code> Note, however, that it will not unnest it.</p>
-<pre class="r"><code>my_journals_author2 &lt;- my_journals_clean %&gt;%
-  unnest(author, .drop = FALSE)</code></pre>
+<p>It is important to point out that there is an argument to <code>unnest()</code> called <code>.drop</code>, which is set to <code>TRUE</code> by default, meaning all additional list columns in the data frame will be removed automatically. So in this case, when we unnest <strong>author,</strong> <strong>link</strong> is dropped as well. If you want to keep it, just set it to <code>FALSE</code> Note, however, that it will not unnest it.</p>
+<pre class="r"><code>my_journals_author2 &lt;- my_journals_clean2 %&gt;%
+  tidyr::unnest(author, .drop = FALSE)</code></pre>
 </div>
 <div id="writing-publications-to-disk" class="section level2">
 <h2>Writing publications to disk</h2>
 <p>We will use the <code>write_csv()</code> function from the <code>readr</code> package to write our data to disk. This package was loaded when you called <code>library(tidyverse)</code> at the beginning of the session.</p>
 <p>Unfortunately, you cannot simply write the <code>my_journals</code> data frame to a CSV, due to the nested list in the author column. It will throw an error: <code>&quot;Error in stream_delim_(df, path, ...) : Don't know how to handle vector of type list.&quot;</code></p>
+<p>You have a few choices:</p>
+<ol style="list-style-type: decimal">
+<li>You can unnest one of the columns and leave <code>.drop</code> set to <code>TRUE</code>. This will add rows for all the values in the nested lists, and drop the additional nested lists.</li>
+</ol>
+<pre class="r"><code>my_journals_author &lt;- my_journals_clean2 %&gt;%
+  tidyr::unnest(author, .drop = TRUE)
+readr::write_csv(my_journals_author, &quot;C:/Users/MyUserName/Desktop/my_journals_author.csv&quot;)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>You can drop the nested lists altogether using a combination of <code>select_if()</code> from <code>dplyr</code> and <code>negate()</code> from <code>purrr</code> to drop all lists in the data frame.</li>
+</ol>
+<pre class="r"><code>my_journals_short &lt;- my_journals %&gt;%
+  dplyr::select_if(purrr::negate(is.list))
+readr::write_csv(my_journals_author, &quot;C:/Users/MyUserName/Desktop/my_journals_short.csv&quot;)</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>You can use <code>mutate()</code> from <code>dplyr</code> to coerce the list columns into character vectors:</li>
+</ol>
+<pre class="r"><code>my_journals_mutated &lt;- my_journals %&gt;%
+  dplyr::mutate(author = as.character(author)) %&gt;%
+  dplyr::mutate(link = as.character(link))
+readr::write_csv(my_journals_mutated, &quot;C:/Users/MyUserName/Desktop/my_journals_mutated.csv&quot;)</code></pre>
+</div>
+</div>
+<div id="using-cr_works-to-get-data-on-articles" class="section level1">
+<h1>Using <code>cr_works</code> to get data on articles</h1>
+<p>This function allows you to search by DOI or a general query in order to return the Crossref metadata.</p>
+<p>It is important to note, as Crossref does <a href="https://github.com/CrossRef/rest-api-doc/blob/master/demos/crossref-api-demo.ipynb">in the documentation</a>:</p>
+<blockquote>
+<p>Crossref does not use “works” in the FRBR sense of the word. In Crossref parlance, a “work” is just a thing identified by a DOI. In practice, Crossref DOIs are used as citation identifiers. So, in FRBR terms, this means, that a Crossref DOI tends to refer to one <em>expression</em> which might include multiple <em>manifestations</em>. So, for example, the ePub, HTML and PDF version of an article will share a Crossref DOI because the differences between them should not effect the interpretation or crediting of the content. In short, they can be cited interchangeably. The same is true of the “accepted manuscript” and the “version-of-record” of that accepted manuscript.</p>
+</blockquote>
+<div id="getting-works-from-a-typed-citation-in-a-word-documenttext-file" class="section level2">
+<h2>Getting works from a typed citation in a Word document/text file</h2>
+<p>This can be helpful if you have a bibliography in a Word document or text file that you want to get into a reference management tool like Zotero or EndNote. For instance, you may need to change the style of the citations, or you have incomplete reference metadata and need a nice, fully-formatted citation.</p>
+<p>If each citation is on its own line in the Word document–as is likely the case–then you can paste the whole bibliography into an Excel spreadsheet and save it to a CSV file, which can then be read into R.</p>
+<pre class="r"><code>my_references &lt;- readr::read_csv(&quot;C:/Users/clakova/Desktop/workshop.materials/samples/references.csv&quot;)
+my_references</code></pre>
+<p>Now that we have our references in R, we can run a query to get the citations from Crossref using <code>cr_works</code>. Because <code>cr_works</code> is not vectorized, we will need to build a loop using <code>map()</code> from the <code>purrr</code> package. We set the limit to 5 because if Crossref didn’t find it in the first 5 results, it’s not likely to be there.</p>
+<pre class="r"><code>my_references_works_list &lt;- purrr::map(
+  my_references$reference,
+  function(x) {
+    print(x)
+    my_works &lt;- rcrossref::cr_works(query = x, limit = 5) %&gt;%
+      purrr::pluck(&quot;data&quot;)
+  })</code></pre>
+<p>The Crossref API assigns a score to each item returned within each query, giving a measure of the API’s confidence in the match. The item with the highest score is returned first in the datasets. We can return the first result in each item in the <code>my_references_works_list</code> by using <code>map_dfr()</code>, which is like <code>map()</code> except it returns the results into a data frame rather than a list:</p>
+<pre class="r"><code>my_references_works_df &lt;- my_references_works_list %&gt;%
+  purrr::map_dfr(., function(x) {
+    x[1, ]
+  })</code></pre>
+<p>Now we can print the titles to see how well they match with the titles of the works we requested:</p>
+<pre class="r"><code>my_references_works_df$title</code></pre>
+<p>It looks like it did not find the last item, “The Ascent of Open Access”, which was a report posted to figshare. Even though this item does have a DOI (<a href="https://doi.org/10.6084/m9.figshare.7618751.v2" class="uri">https://doi.org/10.6084/m9.figshare.7618751.v2</a>), the <code>cr_works()</code> function searches only for Crossref DOIs.</p>
+<p>So we can throw this row out using <code>slice()</code> from <code>dplyr</code>:</p>
+<pre class="r"><code>my_references_works_df &lt;- my_references_works_df %&gt;%
+  dplyr::slice(-7)</code></pre>
+<div id="save-to-bibtex-file" class="section level3">
+<h3>Save to BibTeX file</h3>
+<p>We can now save these to a BibTeX file that can be read into a reference management tool. We do this first with <code>rcrossref::cr_cn()</code> to format in BibTeX, then with <code>write_lines()</code> from the <code>readr</code> package. Remember to replace MyUserName with your own user name, which you can get from running <code>Sys.getenv(&quot;USERNAME&quot;)</code>. See more on options for writing to RIS file in the below section on <code>cr_cn()</code>.</p>
+<pre class="r"><code>my_references_dois &lt;- my_references_works_df$doi
+my_references_bibtex &lt;- rcrossref::cr_cn(my_references_dois, format = &quot;bibtex&quot;) %&gt;%
+  purrr::map_chr(., purrr::pluck, 1)
+readr::write_lines(my_references_bibtex, &quot;C:/Users/clakova/Desktop/workshop.materials/samples/my_citations.bib&quot;)</code></pre>
+<p>If you are using Zotero, go to <strong>File &gt; Import</strong>, then select “A file” and navigate to this .bib file we just created.</p>
+</div>
+</div>
+</div>
+<div id="getting-works-with-flq" class="section level1">
+<h1>Getting works with <code>flq</code></h1>
+<p>As with <code>cr_journals</code>, you can use <code>flq</code> to specify additional parameters, such as author.</p>
+<p>Here we search for the book <em>Open Access</em> by Peter Suber:</p>
+<pre class="r"><code>suber &lt;- cr_works(query = 'open+access', flq = c(`query.author` = 'suber')) %&gt;%
+  pluck(&quot;data&quot;)
+suber</code></pre>
+<p>Dr. Suber has written lots of materials with the term “open access.” We can use the <code>filter()</code> function from <code>dplyr</code> to look only at books, from the <strong>type</strong> column:</p>
+<pre class="r"><code>suber_books &lt;- suber %&gt;%
+  filter(type == &quot;book&quot;)
+suber_books</code></pre>
+<p>One is the book from MIT Press we’re looking for; the other is <em>Knowledge Unbound</em>, which is a collection of his writings.</p>
+<p>We could be more specific from the outset by adding bibliographic information in <code>query.bibliographic</code>, such as ISBN (or ISSN, if it’s a journal):</p>
+<pre class="r"><code>suber2 &lt;- cr_works(flq = c(`query.author` = 'suber',
+                           `query.bibliographic` = '9780262301732')) %&gt;%
+  pluck(&quot;data&quot;)</code></pre>
+<p>Or publication year. It can also be combined with <code>filter()</code> from <code>dplyr</code> in a pipe:</p>
+<pre class="r"><code>suber3 &lt;- cr_works(flq = c(`query.title` = 'open+access',
+                           `query.author` = 'suber',
+                           `query.bibliographic` = '2012')) %&gt;%
+  pluck(&quot;data&quot;) %&gt;%
+  filter(type == &quot;book&quot;)</code></pre>
+<p>You can also use <code>cr_works()</code> to run a query based on very simple text keywords. For example, you can run <code>oa_works &lt;- rcrossref::cr_works(query = &quot;open+access&quot;)</code>. Paul Oldham <a href="https://poldham.github.io/abs/crossref.html#searching_crossref">gives a great example of this</a>, but does make the comment:</p>
+<blockquote>
+<p>CrossRef is not a text based search engine and the ability to conduct text based searches is presently crude. Furthermore, we can only search a very limited number of fields and this will inevitably result in lower returns than commercial databases such as Web of Science (where abstracts and author keywords are available).</p>
+</blockquote>
+<p>Unfortunately there is no boolean AND for Crossref queries (see <a href="https://github.com/CrossRef/rest-api-doc/issues/135" class="uri">https://github.com/CrossRef/rest-api-doc/issues/135</a> and <a href="https://twitter.com/CrossrefSupport/status/1073601263659610113" class="uri">https://twitter.com/CrossrefSupport/status/1073601263659610113</a>). However, as discussed above, the Crossref API assigns a score to each item returned giving a measure of the API’s confidence in the match, and if you connect words using <code>+</code> the Crossref API will give items with those terms a higher score.</p>
+<div id="querying-crossref-works-by-doi" class="section level2">
+<h2>Querying Crossref works by DOI</h2>
+<p>The process is much easier if we already have DOIs. Here start by assigning our DOIs to a variable <code>my_dois</code>:</p>
+<pre class="r"><code>my_dois &lt;- c(&quot;10.5281/zenodo.8381&quot;, &quot;10.1038/d41586-018-00104-7&quot;, 
+             &quot;10.3389/fpsyg.2018.01487&quot;, &quot;10.12688/f1000research.8460.3&quot;)</code></pre>
+</div>
+<div id="getting-citation-data-with-cr_citation_count" class="section level2">
+<h2>Getting citation data with <code>cr_citation_count</code></h2>
+<p>Citation counts per article are not returned with <code>cr_journals</code>, but you can get them with <code>cr_citation_count</code>:</p>
+<pre class="r"><code>x &lt;- rcrossref::cr_journals(issn='1932-6203', works = TRUE, cursor = &quot;*&quot;, cursor_max = 500,
+limit = 100)</code></pre>
+</div>
+</div>
+<div id="getting-citation-data-with-cr_cn" class="section level1">
+<h1>Getting citation data with <code>cr_cn()</code></h1>
+<p>As we discussed above, we can use <code>cr_cn()</code> to input a set of DOIs and get back the citation data in multiple formats. I am not talking about a list of articles that are cited in a given bibliography, nor what articles have cited the article in question, but rather a styled reference that you can input into a bibliography.</p>
+<p>We start by assigning our DOIs to a variable <code>my_dois</code>:</p>
+<pre class="r"><code>my_dois &lt;- c(&quot;10.5281/zenodo.8381&quot;, &quot;10.1038/d41586-018-00104-7&quot;, 
+             &quot;10.3389/fpsyg.2018.01487&quot;, &quot;10.12688/f1000research.8460.3&quot;)</code></pre>
+<div id="getting-formatted-references-in-a-text-file" class="section level2">
+<h2>Getting formatted references in a text file</h2>
+<p>We can use the <code>cr_cn()</code> function from the <code>rcrossref</code> package to get the citations to those articles back in the style you specify.</p>
+<pre class="r"><code>my_citations &lt;- rcrossref::cr_cn(my_dois, format = &quot;text&quot;, style = &quot;apa&quot;)
+my_citations</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;Frosio, G., &amp;amp; Derclaye, E. (2014). Open Access Publishing: A Literature Review. &lt;i&gt;Zenodo&lt;/i&gt;. https://doi.org/10.5281/zenodo.8381&quot;
+## 
+## [[2]]
+## [1] &quot;Shotton, D. (2018). Funders should mandate open citations. Nature, 553(7687), 129–129. doi:10.1038/d41586-018-00104-7&quot;
+## 
+## [[3]]
+## [1] &quot;Paulus, F. M., Cruz, N., &amp; Krach, S. (2018). The Impact Factor Fallacy. Frontiers in Psychology, 9. doi:10.3389/fpsyg.2018.01487&quot;
+## 
+## [[4]]
+## [1] &quot;Tennant, J. P., Waldner, F., Jacques, D. C., Masuzzo, P., Collister, L. B., &amp; Hartgerink, C. H. J. (2016). The academic, economic and societal impacts of Open Access: an evidence-based review. F1000Research, 5, 632. doi:10.12688/f1000research.8460.3&quot;</code></pre>
+<p>This returns each citation into a list element see this <a href="https://campus.datacamp.com/courses/abc-intro-2-r/data-structures?ex=9">datacamp tutorial</a> on lists in R). We can use the <code>map_chr</code> and the <code>pluck</code> functions from <code>purrr</code> to instead assign them to a character vector.</p>
+<pre class="r"><code>my_citations_map &lt;- my_citations %&gt;% 
+  purrr::map_chr(., purrr::pluck, 1)
+my_citations_map</code></pre>
+<pre><code>## [1] &quot;Frosio, G., &amp;amp; Derclaye, E. (2014). Open Access Publishing: A Literature Review. &lt;i&gt;Zenodo&lt;/i&gt;. https://doi.org/10.5281/zenodo.8381&quot;                                                                                                                   
+## [2] &quot;Shotton, D. (2018). Funders should mandate open citations. Nature, 553(7687), 129–129. doi:10.1038/d41586-018-00104-7&quot;                                                                                                                                    
+## [3] &quot;Paulus, F. M., Cruz, N., &amp; Krach, S. (2018). The Impact Factor Fallacy. Frontiers in Psychology, 9. doi:10.3389/fpsyg.2018.01487&quot;                                                                                                                         
+## [4] &quot;Tennant, J. P., Waldner, F., Jacques, D. C., Masuzzo, P., Collister, L. B., &amp; Hartgerink, C. H. J. (2016). The academic, economic and societal impacts of Open Access: an evidence-based review. F1000Research, 5, 632. doi:10.12688/f1000research.8460.3&quot;</code></pre>
+<p>You can then write this to a text file. If you’re using the below code, replace “MyUserName” below with your actual user name to write this file to your desktop. You can get your username by calling <code>Sys.getenv(&quot;USERNAME&quot;)</code>. Or you can change your directory altogether with the <code>setwd()</code> function.</p>
+<pre class="r"><code>write(my_citations_map, file = &quot;C:/Users/MyUserName/Desktop/my_citations.txt&quot;)</code></pre>
+<p>The <code>purrr::map_chr</code> function is connected to <code>my_citations</code> with something called a <a href="https://www.datacamp.com/community/tutorials/pipe-r-tutorial">Pipe Operator</a> <code>%&gt;%</code>. We will be using this operator throughout the tutorial. A pipe takes the output of one statement and makes it the input of the next statement. You can think of it as “then” in natural language. So the above script first takes the <code>my_citations</code> data, then it applies the set of functions specified..</p>
+<p>The above is helpful if you need to paste the references somewhere, and there are loads of other citation styles included in <code>rcrossref</code>–view them by calling <code>rcrossref::get_styles()</code> and it will print the list to your console. I’ll just print the first 15 below:</p>
+<pre class="r"><code>rcrossref::get_styles()[1:15] %&gt;%
+  knitr::kable() %&gt;%
+  kableExtra::kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;), full_width = F, fixed_thead = T, position = &quot;center&quot;)</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+academy-of-management-review
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+accident-analysis-and-prevention
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+aci-materials-journal
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acm-sig-proceedings-long-author-list
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acm-sig-proceedings
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acm-sigchi-proceedings-extended-abstract-format
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acm-sigchi-proceedings
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acm-siggraph
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acme-an-international-journal-for-critical-geographies
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acta-amazonica
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acta-anaesthesiologica-scandinavica
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acta-anaesthesiologica-taiwanica
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acta-chirurgiae-orthopaedicae-et-traumatologiae-cechoslovaca
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acta-naturae
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+acta-neurobiologiae-experimentalis
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="getting-formatted-references-in-a-bibtex-or-ris-file" class="section level2">
+<h2>Getting formatted references in a BibTeX or RIS file</h2>
+<p>You’ll notice that some of the formatting on these is inconsistent (for instance, there are some encoding issues). So rather than There are other format options if you are using BibTeX, Zotero or another reference management tool. Below is an example with BibTeX; again, map it before you write it to file.</p>
+<pre class="r"><code>my_citations_bibtex &lt;- rcrossref::cr_cn(my_dois, format = &quot;bibtex&quot;) %&gt;%
+  purrr::map_chr(., purrr::pluck, 1)</code></pre>
+<p>Write it to a bib file using <code>write_lines()</code> from the <code>readr</code> package. Remember to replace MyUserName with your own user name, which you can get from running <code>Sys.getenv(&quot;USERNAME&quot;)</code>. Or just create a directory and use that.</p>
+<pre class="r"><code>readr::write_lines(my_citations_bibtex, &quot;C:/Users/MyUserName/Desktop/my_citations.bib&quot;)</code></pre>
+<p>Same with RIS files. Here we make a <code>tibble</code> so it will save to an RIS file.</p>
+<pre class="r"><code>my_citations_ris &lt;- rcrossref::cr_cn(my_dois, format = &quot;ris&quot;) %&gt;%
+  purrr::map_chr(., purrr::pluck, 1) %&gt;%
+  tibble::tibble()</code></pre>
+<p>Use <code>write_csv()</code> from <code>readr</code> to write the RIS file.</p>
+<pre class="r"><code>readr::write_csv(my_citations_ris, &quot;C:/Users/clakova/Desktop/my_citations.ris&quot;)</code></pre>
+<p>You can now import either the BibTeX file or the RIS file into your reference management software.</p>
+</div>
+<div id="using-a-csv-of-dois" class="section level2">
+<h2>Using a CSV of DOIs</h2>
+<p>If you have a CSV file of DOIs, you can read that into R using the <code>read_csv()</code> function from the <a href="https://readr.tidyverse.org/"><code>readr</code></a> package (which was loaded when you called <code>library(tidyverse)</code> above). If you have an Excel file, you can calling <code>library(readxl)</code> package and use the <a href="https://readxl.tidyverse.org/"><code>read_excel()</code></a> package.</p>
+</div>
+<div id="rstudio-add-in" class="section level2">
+<h2>RStudio Add-In</h2>
+<p>As described in the <a href="https://cran.r-project.org/web/packages/rcrossref/rcrossref.pdf">documentation</a>, <code>rcrossref</code> installs an add-in to RStudio:</p>
+<blockquote>
+<p>On installation of rcrossref you get an RStudio Addin. To use the Addin, go to the top toolbar &gt; Tools &gt; Addins &gt; Add Crossref Citations. You’ll get a window pop up that you can put in DOIs for. If the DOI is found, the bibtex citations will be added to a file called crossref.bib. New citations will be appended to that file. Addin authored by Hao Zhu (<a href="https://github.com/haozhu233" class="uri">https://github.com/haozhu233</a>)</p>
+</blockquote>
+<p>Check out the <code>RefManageR</code> package for more you can do with citation files in R.</p>
 <p>NEED TO READ THIS <a href="https://recology.info/2019/03/apis-text-mining-logs/" class="uri">https://recology.info/2019/03/apis-text-mining-logs/</a></p>
 </div>
 </div>

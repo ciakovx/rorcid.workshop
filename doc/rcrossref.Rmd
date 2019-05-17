@@ -51,7 +51,7 @@ There are other IDEs such as [Microsoft R Open](https://mran.microsoft.com/open)
 First install and load `rorcid` in R. Also install `usethis` in order to set the API key, as well as `tidyverse`, which is a package that contains many packages we'll use throughout.
 
 ```{r install, eval=FALSE}
-install.packages("rorcid")
+install.packages("rcrossref")
 install.packages("usethis")
 install.packages("tidyverse")
 library(rcrossref)
@@ -244,7 +244,7 @@ my_journals_clean1 <- my_journals %>%
 
 Another option is to use `mutate` to add in a `tibble` with the same column names as the other authors, with the values set to `NA` rather than `NULL`.
 
-```{r journals4, eval=TRUE,cache=TRUE}
+```{r journals4xx, eval=TRUE,cache=TRUE}
 my_journals_clean2 <- my_journals %>%
   dplyr::mutate(author = tidyr::replace_na(author, list(dplyr::tibble(given = NA,
                                                                       family = NA,
@@ -268,36 +268,9 @@ At the time this data was pulled, we now have 24 observations of 24 variables ra
 It is important to point out that there is an argument to `unnest()` called `.drop`, which is set to `TRUE` by default, meaning all additional list columns in the data frame will be removed automatically. So in this case, when we unnest **author,** **link** is dropped as well. If you want to keep it, just set it to `FALSE` Note, however, that it will not unnest it.
 
 ```{r journals6, eval=TRUE,cache=TRUE}
-my_journals_author2 <- my_journals_clean %>%
+my_journals_author2 <- my_journals_clean2 %>%
   tidyr::unnest(author, .drop = FALSE)
 ```
-
-# `cr_works`
-
-
-
-```{r journals6, eval=TRUE,cache=TRUE}
-oa_works2 <- cr_works(query = "open+access")
-
-oa_works2$meta$total_results
-```
-
-Unfortunately there is no boolean AND for Crossref queries (see https://github.com/CrossRef/rest-api-doc/issues/135 and  https://twitter.com/CrossrefSupport/status/1073601263659610113). However, the Crossref API assigns a score to each item returned giving a measure of the API's confidence in the match, and if you connect words using `+` the Crossref API will give items with those terms a higher score.
-
-
-
-# maybe under cr_works?
-
-```{r journals3x, eval=TRUE,cache=TRUE}
-my_citations <- c("Björk B. 2016a. Hybrid open access—a longitudinal study. Journal of Informetrics 10(4):919–932 DOI 10.1016/j.joi.2016.08.002.", 
-                  "Laakso M, Welling P, Bukvova H, Nyman L, Björk BC, Hedlund T. 2011. The development of open access journal publishing from 1993 to 2009. PLOS ONE 6(6):e20961 DOI 10.1371/journal.pone.0020961.", 
-                  "Tennant JP, Waldner F, Jacques DC, Masuzzo P, Collister LB, Hartgerink CH. 2016. The academic, economic and societal impacts of Open Access: an evidence-based review. F1000 Research 5:Article 632 DOI 10.12688/f1000research.8460.3.")
-
-
-
-```
-
-
 
 ## Writing publications to disk
 
@@ -332,6 +305,131 @@ my_journals_mutated <- my_journals %>%
 readr::write_csv(my_journals_mutated, "C:/Users/MyUserName/Desktop/my_journals_mutated.csv")
 ```
 
+# Using `cr_works` to get data on articles
+
+This function allows you to search by DOI or a general query in order to return the Crossref metadata.
+
+It is important to note, as Crossref does [in the documentation](https://github.com/CrossRef/rest-api-doc/blob/master/demos/crossref-api-demo.ipynb):
+
+> Crossref does not use "works" in the FRBR sense of the word. In Crossref parlance, a "work" is just a thing identified by a DOI. In practice, Crossref DOIs are used as citation identifiers. So, in FRBR terms, this means, that a Crossref DOI tends to refer to one *expression* which might include multiple *manifestations*. So, for example, the ePub, HTML and PDF version of an article will share a Crossref DOI because the differences between them should not effect the interpretation or crediting of the content. In short, they can be cited interchangeably. The same is true of the "accepted manuscript" and the "version-of-record" of that accepted manuscript.
+
+## Getting works from a typed citation in a Word document/text file
+
+This can be helpful if you have a bibliography in a Word document or text file that you want to get into a reference management tool like Zotero or EndNote. For instance, you may need to change the style of the citations, or you have incomplete reference metadata and need a nice, fully-formatted citation.
+
+If each citation is on its own line in the Word document--as is likely the case--then you can paste the whole bibliography into an Excel spreadsheet and save it to a CSV file, which can then be read into R.
+
+```{r works, eval=FALSE,cache=TRUE}
+my_references <- readr::read_csv("C:/Users/clakova/Desktop/workshop.materials/samples/references.csv")
+my_references
+```
+
+Now that we have our references in R, we can run a query to get the citations from Crossref using `cr_works`. Because `cr_works` is not vectorized, we will need to build a loop using `map()` from the `purrr` package. We set the limit to 5 because if Crossref didn't find it in the first 5 results, it's not likely to be there.
+
+```{r works2, eval=FALSE,cache=TRUE}
+my_references_works_list <- purrr::map(
+  my_references$reference,
+  function(x) {
+    print(x)
+    my_works <- rcrossref::cr_works(query = x, limit = 5) %>%
+      purrr::pluck("data")
+  })
+```
+
+The Crossref API assigns a score to each item returned within each query, giving a measure of the API's confidence in the match. The item with the highest score is returned first in the datasets. We can return the first result in each item in the `my_references_works_list` by using `map_dfr()`, which is like `map()` except it returns the results into a data frame rather than a list:
+
+```{r works3, eval=FALSE,cache=TRUE}
+my_references_works_df <- my_references_works_list %>%
+  purrr::map_dfr(., function(x) {
+    x[1, ]
+  })
+```
+
+Now we can print the titles to see how well they match with the titles of the works we requested:
+
+```{r works3x, eval=FALSE,cache=TRUE}
+my_references_works_df$title
+```
+
+It looks like it did not find the last item, "The Ascent of Open Access", which was a report posted to figshare. Even though this item does have a DOI (https://doi.org/10.6084/m9.figshare.7618751.v2), the `cr_works()` function searches only for Crossref DOIs. 
+
+So we can throw this row out using `slice()` from `dplyr`:
+
+```{r works3xx, eval=FALSE,cache=TRUE}
+my_references_works_df <- my_references_works_df %>%
+  dplyr::slice(-7)
+```
+
+
+### Save to BibTeX file
+
+We can now save these to a BibTeX file that can be read into a reference management tool. We do this first with `rcrossref::cr_cn()` to format in BibTeX, then with `write_lines()` from the `readr` package. Remember to replace MyUserName with your own user name, which you can get from running `Sys.getenv("USERNAME")`. See more on options for writing to RIS file in the below section on `cr_cn()`.
+
+```{r works5, eval=FALSE}
+my_references_dois <- my_references_works_df$doi
+my_references_bibtex <- rcrossref::cr_cn(my_references_dois, format = "bibtex") %>%
+  purrr::map_chr(., purrr::pluck, 1)
+readr::write_lines(my_references_bibtex, "C:/Users/clakova/Desktop/workshop.materials/samples/my_citations.bib")
+```
+
+If you are using Zotero, go to **File > Import**, then select "A file" and navigate to this .bib file we just created.
+
+# Getting works with `flq`
+
+As with `cr_journals`, you can use `flq` to specify additional parameters, such as author.
+
+Here we search for the book *Open Access* by Peter Suber:
+
+```{r works3xxx, eval=FALSE,cache=TRUE}
+suber <- cr_works(query = 'open+access', flq = c(`query.author` = 'suber')) %>%
+  pluck("data")
+suber
+```
+
+Dr. Suber has written lots of materials with the term "open access." We can use the `filter()` function from `dplyr` to look only at books, from the **type** column:
+
+```{r works4, eval=FALSE,cache=TRUE}
+suber_books <- suber %>%
+  filter(type == "book")
+suber_books
+```
+
+One is the book from MIT Press we're looking for; the other is *Knowledge Unbound*, which is a collection of his writings.
+
+We could be more specific from the outset by adding bibliographic information in `query.bibliographic`, such as ISBN (or ISSN, if it's a journal):
+
+```{r works5x, eval=FALSE,cache=TRUE}
+suber2 <- cr_works(flq = c(`query.author` = 'suber',
+                           `query.bibliographic` = '9780262301732')) %>%
+  pluck("data")
+```
+
+Or publication year. It can also be combined with `filter()` from `dplyr` in a pipe:
+
+```{r works6, eval=FALSE,cache=TRUE}
+suber3 <- cr_works(flq = c(`query.title` = 'open+access',
+                           `query.author` = 'suber',
+                           `query.bibliographic` = '2012')) %>%
+  pluck("data") %>%
+  filter(type == "book")
+```
+
+You can also use `cr_works()` to run a query based on very simple text keywords. For example, you can run `oa_works <- rcrossref::cr_works(query = "open+access")`.
+Paul Oldham [gives a great example of this](https://poldham.github.io/abs/crossref.html#searching_crossref), but does make the comment:
+
+> CrossRef is not a text based search engine and the ability to conduct text based searches is presently crude. Furthermore, we can only search a very limited number of fields and this will inevitably result in lower returns than commercial databases such as Web of Science (where abstracts and author keywords are available). 
+
+Unfortunately there is no boolean AND for Crossref queries (see https://github.com/CrossRef/rest-api-doc/issues/135 and  https://twitter.com/CrossrefSupport/status/1073601263659610113). However, as discussed above, the Crossref API assigns a score to each item returned giving a measure of the API's confidence in the match, and if you connect words using `+` the Crossref API will give items with those terms a higher score.
+
+## Querying Crossref works by DOI
+
+The process is much easier if we already have DOIs. Here start by assigning our DOIs to a variable `my_dois`:
+
+```{r citation1xx, eval=TRUE,cache=TRUE}
+my_dois <- c("10.5281/zenodo.8381", "10.1038/d41586-018-00104-7", 
+             "10.3389/fpsyg.2018.01487", "10.12688/f1000research.8460.3")
+```
+
 
 
 ## Getting citation data with `cr_citation_count`
@@ -347,11 +445,11 @@ limit = 100)
 
 # Getting citation data with `cr_cn()`
 
-One of the best and easiest use cases for `rcrossref` is inputting a set of DOIs and getting back the citation data in multiple formats. I am not talking about a list of articles that are cited in a given bibliography, nor what articles have cited the article in question, but rather a styled reference that you can input into a bibliography.
+As we discussed above, we can use `cr_cn()` to input a set of DOIs and get back the citation data in multiple formats. I am not talking about a list of articles that are cited in a given bibliography, nor what articles have cited the article in question, but rather a styled reference that you can input into a bibliography.
 
 We start by assigning our DOIs to a variable `my_dois`:
 
-```{r citation1, eval=TRUE,cache=TRUE}
+```{r citation1x, eval=TRUE,cache=TRUE}
 my_dois <- c("10.5281/zenodo.8381", "10.1038/d41586-018-00104-7", 
              "10.3389/fpsyg.2018.01487", "10.12688/f1000research.8460.3")
 ```
