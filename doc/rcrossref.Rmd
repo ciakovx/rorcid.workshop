@@ -37,18 +37,18 @@ There are other IDEs such as [Microsoft R Open](https://mran.microsoft.com/open)
 * [Crossref  REST API documentation](https://github.com/ropensci/rcrossref)
 * [Crossref Metadata API JSON Format](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md)
 * Tutorials
-- rOpenSci [rcrossref tutorial](https://ropensci.org/tutorials/rcrossref_tutorial/)
-- Paul Oldham: ["Accessing the Scientific Literature with Crossref"](https://poldham.github.io/abs/crossref.html)
-- [rcrossref vignette](https://cran.r-project.org/web/packages/rcrossref/vignettes/crossref_vignette.html)
+  - rOpenSci [rcrossref tutorial](https://ropensci.org/tutorials/rcrossref_tutorial/)
+  - Paul Oldham: ["Accessing the Scientific Literature with Crossref"](https://poldham.github.io/abs/crossref.html)
+  - [rcrossref vignette](https://cran.r-project.org/web/packages/rcrossref/vignettes/crossref_vignette.html)
 * [R cheat sheets](https://github.com/rstudio/cheatsheets)
-- [base R cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/base-r.pdf)
-- [purrr cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/purrr.pdf)
-- [data transformation cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf)
-- [data import cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/data-import.pdf)
+  - [base R cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/base-r.pdf)
+  - [purrr cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/purrr.pdf)
+  -  [data transformation cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf)
+  - [data import cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/data-import.pdf)
 
 ## Setting up `rcrossref`
 
-First install and load `rorcid` in R. Also install `usethis` in order to set the API key, as well as `tidyverse`, which is a package that contains many packages we'll use throughout.
+First install and load `rorcid` in R. Also install `usethis` in order to send your email to Crossref, as well as `tidyverse`, which is a package that contains many packages we'll use throughout.
 
 ```{r install, eval=FALSE}
 install.packages("rcrossref")
@@ -70,52 +70,103 @@ A new window will open in R Studio. Type `crossref_email=name@example.com`, usin
 
 # Getting publications from journals with `cr_journals`
 
-`cr_journals()` takes either an ISSN or a query, and returns details on what data Crossref has for that journal, as well as metadata for articles published in the journal, including DOI, title, volume, issue, pages, publisher, authors, etc.
+`cr_journals()` takes either an ISSN or a general keyword query, and returns details on what data Crossref has for that journal, or metadata for articles published in the journal, including DOI, title, volume, issue, pages, publisher, authors, etc.
 
 ## Getting journal details
 
-You may first be interested in what data Crossref has for a given journal--for instance, whether abstracts are included, if the full text of articles is deposited, if author ORCIDs are provided, if author affiliations are provided, if article licensing data is provided, if funder data is provided, and so on. To do this, we use `cr_journals` and set the `works` argument to `FALSE`. 
+You may first be interested in what data Crossref has for a given journal. In other words, you can find determine the publisher, the total number of articles in Crossref, whether abstracts are included, if the full text of articles is deposited, if author ORCIDs are provided, if author affiliations are provided, if article licensing data is provided, if funder data is provided, if article references are deposited, and so on. To do this, we use `cr_journals` and set the `works` argument to `FALSE`. 
 
-To get this information, irst we will create a new vector `jeslib_issn` with the ISSN for the *Journal of e-Science Librarianship*. We will then run `cr_journals()`, setting the ISSN equal to the `jeslib_issn` we just created.
+First we will create a new vector `plosone_issn` with the ISSN for the journal *PLoS ONE*. We will then run `cr_journals()`, setting the ISSN equal to the `plosone_issn` we just created.
 
 ```{r crjournals1, eval=TRUE,cache=TRUE}
-jeslib_issn <- "2161-3974"
-jeslib_details <- rcrossref::cr_journals(issn = jeslib_issn, works = FALSE) %>%
+plosone_issn <- '1932-6203'
+plosone_details <- rcrossref::cr_journals(issn = plosone_issn, works = FALSE) %>%
   purrr::pluck("data")
-jeslib_details
 ```
 
-It comes back as a data frame within a list that can be returned into a data frame using the `pluck()` function from the `purrr` package.
+It actually comes back as a list of three items, two of which are unnecessary, and only one of which that contains the actual data. We use the `pluck()` function from the `purrr` package to pull that data only. We will be using this function throughout this tutorial; it's an easy way of indexing deeply and flexibly into lists.
 
-This will give you information on what data the publisher has provided to Crossref for this journal. Some of the pertinent data points here are:
+The `purrr::pluck()` function is connected to `plosone_details` with something called a [Pipe Operator](https://www.datacamp.com/community/tutorials/pipe-r-tutorial) `%>%`. We will be using this operator throughout the tutorial. A pipe takes the output of one statement and makes it the input of the next statement. You can think of it as "then" in natural language. So the above script first makes the API call with `cr_journals()`, then it applies `pluck()` to extract only the list element called "data", and returns it to the `plosone_details` value.
 
+Looking at the data itself, we see it includes one observation of 53 different variables, some of which I described above. I could not find the documentation for what these variables are anywhere on Crossref's webpage. We can either click on the data frame and browse it, or print any of these to the console, such as the publisher:
 
+```{r journalsview, eval=TRUE,cache=TRUE}
+plosone_details$publisher
+```
 
-## Getting publications by ISSN
+The total number of DOIs on file:
 
-We will use the `jeslib_issn` value in the `issn =` argument to `cr_journals.` We set the `limit` to 25, meaning we'll only get back 25 articles tops. We also set the `works` to `TRUE`, in order to get the publications themselves rather than data about the journal, as we did above.  The max limit is 1000.
+```{r journalsview2, eval=TRUE,cache=TRUE}
+plosone_details$total_dois
+```
+
+Whether they deposit data on funders of research:
+
+```{r journalsview3, eval=TRUE,cache=TRUE}
+plosone_details$deposits_funders_current
+```
+
+And so one. Call `names(plosone_details)` to see all the variables by name.
+
+```{r journalsview4, eval=TRUE,cache=TRUE}
+names(plosone_details)
+```
+
+## Getting journal publications by ISSN
+
+We will now use the `plosone_issn` value in the `issn =` argument to `cr_journals.` We set the `limit` to 25, meaning we'll only get back 25 articles tops. We also set the `works` to `TRUE`, in order to get the publications themselves rather than data about the journal, as we did above.  The max limit is 1000, but you can get more using the `cursor` argument (see below). As above, we use `pluck()` to return only the data.
 
 ```{r journals1, eval=TRUE,cache=TRUE}
-jeslib_publications <- rcrossref::cr_journals(issn = jeslib_issn, works = T, limit = 25) %>%
+plosone_publications <- rcrossref::cr_journals(issn = plosone_issn, works = T, limit = 25) %>%
   purrr::pluck("data")
-jeslib_publications
+plosone_publications
 ```
 
-You can also pass multiple ISSNs to `cr_journals`. Here we create a new vector `my_issns` using the `c()` function. These are ISSNs for the *Journal of American History* and *JAMA: The Journal of the American Medical Association*. 
+You can also pass multiple ISSNs to `cr_journals`. Here we create 2 new values, `jama_issn` and `jah` ISSN: these are ISSNs for the *Journal of American History* and *JAMA: The Journal of the American Medical Association*. We then pass them to `cr_journals` by combining them in `c()` (which is like CONCATENATE in Excel). We set `works` to `TRUE` so we'll get the publications metadata rather than details about the publications, and we set the `limit` to 50, so we'll get 50 publications per journal.
 
 ```{r journals, eval=TRUE,cache=TRUE}
 jama_issn <- '1538-3598'
 jah_issn <- '0021-8723'
-my_journals <- rcrossref::cr_journals(issn = c(jama_issn, jah_issn), works = T, limit = 10) %>%
+jah_jama_publications <- rcrossref::cr_journals(issn = c(jama_issn, jah_issn), works = T, limit = 50) %>%
   purrr::pluck("data")
-my_journals
+jah_jama_publications
 ```
 
-A rich set of metadata for the articles in the given publications is returned, including title, DOI, ISSN, volume, issue, publisher, etc. 
+A data frame of 100 observations of 24 variables is returned. This is a rich set of metadata for the articles in the given publications. The values are detailed in the [Crossref documentation](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work), and include title, DOI, DOI prefix identifer, ISSN, volume, issue, publisher, abstract (if provided), reference count (if provided--the number of references *in* the given article), link (if provided), subject (if provided), and other information. The number of citations *to* the article are not pulled, but these can be gathered separately with `cr_citation_count()` (see below).
 
-## Filtering the query with the `filter` argument
+### Filtering rows and selecting columns with `dplyr`
 
-You can use the `filter` argument to specify some parameters. See the available filters by calling `rcrossref::filter_names()`, and details by calling `rcrossref::filter_details`. I reproduce that data below, and it's also in [the API documentation](https://github.com/CrossRef/rest-api-doc#filter-names)
+You can use the `filter()` and `select()` functions from the `dplyr` package if you want to get subsets--for instance, let's say you want only volume 99, issue 4 of the *Journal of American History* and want only some basic metadata:
+
+```{r journalsfilter, eval=TRUE,cache=TRUE}
+jah_99_4 <- jah_jama_publications %>%
+  dplyr::filter(issn == jah_issn,
+         volume == "99",
+         issue == "4") %>%
+  dplyr::select(title, doi, volume, issue, page, published.print, issn)
+```
+
+And of course we can get only a single article if we need, either by DOI:
+
+```{r journalsfilter2, eval=TRUE,cache=TRUE}
+jama_article <- jah_jama_publications %>%
+  dplyr::filter(doi == "10.1001/jama.244.16.1799") %>%
+  dplyr::select(title, doi, volume, issue, page, published.print, issn)
+```
+
+Or by title:
+
+```{r journalsfilter3, eval=TRUE,cache=TRUE}
+jah_article <- jah_jama_publications %>%
+  dplyr::filter(str_detect(title, "Gridiron University")) %>%
+  dplyr::select(title, doi, volume, issue, page, published.print, issn)
+```
+
+We use the `str_detect()` function from the `stringr` package, which is part of the `tidyverse`, in order to find a single term in the title, instead of requiring an exact match of the entire title.
+
+## Filtering the `cr_journals` query with the `filter` argument
+
+Rather than pulling a large number of articles and then filtering after the fact, you can use the `filter` argument within `cr_journals` to specify some parameters as the query is executing. Note that **this `filter` is completely different from the one we just used in `dplyr`. This filter is built into the Crossref API query. See the available filters by calling `rcrossref::filter_names()`, and details by calling `rcrossref::filter_details`. I reproduce that data below, and it's also in [the API documentation](https://github.com/CrossRef/rest-api-doc#filter-names)
 
 ```{r journals1x, eval=TRUE,echo=FALSE,cache=TRUE}
 crossref_filters <- bind_cols(filter = rcrossref::filter_names(),
@@ -128,7 +179,7 @@ crossref_filters %>%
 ```
 
 ### Filtering by publication date with `from_pub_date` and `until_pub_date`
-For example, you may be interested in publications only from a given year, or within a date range. Remember to increase the limit if you need to. Also notice three things about the `filter` argument:
+For example, you may only want to pull publications from a given year, or within a date range. Remember to increase the limit if you need to. Also notice three things about the `filter` argument:
 
 * The query parameter is in backticks (the key next to the 1 on the keyboard)
 * The query itself is in single quotes
@@ -145,7 +196,7 @@ You can also use `until_pub_date`. See the above table for other dates, includin
 
 ### Filtering by license with `has_license`
 
-You may be interested in licensing information for articles; for instance, the proportion of articles in a given journal that are Creative Commons licensed. First run `cr_journals` with `works` set to `FALSE` in order to get journal details and check if the publisher even sends licensing information to Crossref. We will use PLOS ONE as an example.
+You may be interested in licensing information for articles; for instance, the proportion of articles in a given journal that are Creative Commons licensed. First run `cr_journals` with `works` set to `FALSE` in order to get journal details and check if the publisher even sends licensing information to Crossref. We will use PLOS ONE again as an example.
 
 ```{r filter2, eval=TRUE,echo=FALSE,cache=TRUE}
 plosone_issn <- '1932-6203'
@@ -162,7 +213,7 @@ plosone_license <- rcrossref::cr_journals(issn = plosone_issn, works = T, limit 
   pluck("data")
 ```
 
-The license data comes in as a nested column. We can unnest it using `tidyr::unnest`. For now, we will set `.drop = FALSE`, which will keep the other list columns (author, link, and funder).
+The license data comes in as a nested column. We can unnest it using `tidyr::unnest`, which will be discussed more below. For now, we will set `.drop = FALSE`, which will keep the other list columns (author, link, and funder).
 
 ```{r filter4, eval=TRUE,echo=FALSE,cache=TRUE}
 plosone_license_unnested <- plosone_license %>%
@@ -171,29 +222,9 @@ plosone_license_unnested <- plosone_license %>%
 
 This adds four columns: **date** (Date on which this license begins to take effect), **URL** (Link to a web page describing this license--in this case, Creative Commons), **delay in days** (Number of days between the publication date of the work and the start date of this license), and **content.version**, which specifies the version of the article the licensing data pertains to (VOR = Version of Record, AM = Accepted Manuscript, TDM = Text and Data Mining), .
 
-## Getting more than 1000 results `cursor`
-
-The , we have to use the `cursor` argument. Here we will look at the journal Philosophical Transactions. We run `cr_journals` with `works` set to `FALSE` in order to get the journal details, specifically to find out how many articles from this journal are indexed in Crossref.
-
-```{r cursor, eval=TRUE,cache=TRUE,echo=FALSE}
-philo_issn <- '2053-9223'
-philo_details <- rcrossref::cr_journals(philo_issn, works = FALSE) %>%
-  pluck("data")
-philo_details$total_dois
-```
-
-Because there are 8,534 articles, we need to pass the `cursor` argument to `cr_journals`. As described by [Paul Oldham](https://poldham.github.io/abs/crossref.html), "the CrossRef API also permits deep paging (fetching results from multiple pages). We can retrieve all the results by setting the cursor to the wildcard * and the cursor_max to the total results. Note that the cursor and the cursor_max arguments must appear together for this to work. Because it can take a while to retrieve the results we will add a progress bar using .progress to indicate how far along the query is."
-
-Here I will set the limit to 1,500 rather than collect the entire 8,534.
-
-```{r cursor2, eval=TRUE,cache=TRUE,echo=FALSE}
-philo_articles <- rcrossref::cr_journals(philo_issn, works = TRUE, cursor = "*", cursor_max = 1500, .progress = "text") %>%
-  pluck("data")
-```
-
 ## Field queries
 
-There is a field query (`flq`) argument to `cr_journals()` that allows you to specify additional variables, which are listed in the [Crossref documentation](https://github.com/CrossRef/rest-api-doc#field-queries) and reproduced below. You *must* provide an ISSN--in other words, you can't run a field query for authors across all journals. 
+At the risk of confusing you further, there is yet another way of making your query more precise, and that is to use a field query (`flq`) argument to `cr_journals()`. This allows you to specify additional variables, which are listed in the [Crossref documentation](https://github.com/CrossRef/rest-api-doc#field-queries) and reproduced below. You *must* provide an ISSN--in other words, you can't run a field query for authors across all journals. 
 
 ```{r flqtable, eval=TRUE,cache=TRUE,echo=FALSE}
 flqtable <- tibble(field_query_parameter = c("query.title", "query.container-title", "query.author", "query.editor", "query.chair", "query.translator", "query.contributor", "query.bibliographic", "query.affiliation"),
@@ -202,6 +233,7 @@ flqtable <- tibble(field_query_parameter = c("query.title", "query.container-tit
 )) %>%
   kable() %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = F, fixed_thead = T, position = "center")
+flqtable
 ```
 
 ### Field query by title
@@ -226,83 +258,120 @@ jlsc_publications_auth <- rcrossref::cr_journals(issn = jlsc_issn, works = T, li
 
 ## Unnesting list columns
 
-Authors, links, licenses, funders, and some other values can appear in nested lists when you call `cr_journals` because there can be, and often are, multiple of each of these items per article. Our `my_journals` data frame has nested lists for **author** and **link**. You can check all column data classes by running `typeof` across all columns using the `map_chr()` function from `purrr`:
+Authors, links, licenses, funders, and some other values can appear in nested lists when you call `cr_journals` because there can be, and often are, multiple of each of these items per article. Our `jah_jama_publications` data frame has nested lists for **author** and **link**. You can check the data classes on all variables by running `typeof()` across all columns using the `map_chr()` function from `purrr`:
 
 ```{r journals4x, eval=TRUE,cache=TRUE}
-purrr::map_chr(my_journals, typeof)
+purrr::map_chr(jah_jama_publications, typeof)
 ```
 
-These can normally be easily unnested using the `unnest()` function from the `tidyr` package. However it throws an error if there are NULL values in the column. It looks like the `tidyr` developer is currently [working to allow NULL while unnesting](https://github.com/tidyverse/tidyr/issues/436) but until then, we replace the `NULL` values with empty tibbles using the `replace_na()` function from `tidyr`. 
+These can normally be easily unnested using the `unnest()` function from the `tidyr` package. However it throws an error if there are NULL values (when the publisher hasn't provided that data to Crossref). It looks like the `tidyr` developer is currently [working to allow NULL while unnesting](https://github.com/tidyverse/tidyr/issues/436) but until then, we need a solution if we want to unnest the lists.  
 
-The simplest option is to remove rows with `NULL` values using the `drop_na()` function from `tidyr`. The problem is, this will remove a lot.
-
-```{r journals4, eval=TRUE,cache=TRUE}
-my_journals_clean1 <- my_journals %>%
-  drop_na(author) %>%
-  unnest(author)
-```
-
-Another option is to use `mutate` to add in a `tibble` with the same column names as the other authors, with the values set to `NA` rather than `NULL`.
+This is a bit complicated, but you can use `map_lgl` to filter out the `NULL` author columns, then `unnest` the authors, then bind back those NULL author columns, while removing `author` and `link` as these are no longer in the transformed, unnested data.
 
 ```{r journals4xx, eval=TRUE,cache=TRUE}
-my_journals_clean2 <- my_journals %>%
-  dplyr::mutate(author = tidyr::replace_na(author, list(dplyr::tibble(given = NA,
-                                                                      family = NA,
-                                                                      sequence = NA)))) %>%
-  dplyr::mutate(link = tidyr::replace_na(link, list(dplyr::tibble(URL = NA,
-                                                                  content.type = NA,
-                                                                  content.version = NA,
-                                                                  intended.application = NA))))
-# need to add license and funder here. Probably should filter these out but oh well.
+jah_jama_publications_auth <- jah_jama_publications %>% 
+  dplyr::filter(!purrr::map_lgl(author, is.null)) %>% 
+  tidyr::unnest(author, .drop = TRUE) %>% 
+  dplyr::bind_rows(jah_jama_publications %>% 
+                     dplyr::filter(map_lgl(author, is.null)) %>%
+                     dplyr::select(-author, -link))
 ```
 
-This allows us to `unnest` one or both of those columns. In other words, when we unnest author, we will see an additional row added for each variable with multiple authors. We will also see three new columns added: **given** (first name), **family** (last name), and **sequence** (first or additional). All data for these rows will be duplicated except for the author.
+When we unnest a nested list, we will see an additional row added for each variable with multiple authors. We will also see three new columns added: **given** (first name), **family** (last name), and **sequence** (first or additional). All other data for these rows will be duplicated except for those values.
+
+We now have 105 observations of 25 variables, rather than 100 observations of 24 variables. So the rows with duplicated DOIs are the ones with multiple co-authors. The titles of these are
 
 ```{r journals5, eval=TRUE,cache=TRUE}
-my_journals_author <- my_journals_clean2 %>%
-  tidyr::unnest(author)
+jah_jama_publications_auth %>%
+  dplyr::filter(duplicated(doi)) %>%
+  dplyr::select(title) %>%
+  dplyr::distinct()
 ```
 
-At the time this data was pulled, we now have 24 observations of 24 variables rather than 20 observations of 23 variables. Looking closely at the data, we can see that all articles had a single author except for two of them (8 and 9), which had three each. Thus four new rows were added for those articles.
+Out of that set of 100 articles, only 3 were co-authored.
+
+We can do the same with **link**, just replace "author":
+
+```{r journals4x2, eval=TRUE,cache=TRUE}
+jah_jama_publications_link <- jah_jama_publications %>% 
+  dplyr::filter(!purrr::map_lgl(link, is.null)) %>% 
+  tidyr::unnest(link, .drop = FALSE) %>% 
+  dplyr::bind_rows(jah_jama_publications %>% 
+                     dplyr::filter(map_lgl(link, is.null)) %>%
+                     dplyr::select(-author, -link))
+```
 
 It is important to point out that there is an argument to `unnest()` called `.drop`, which is set to `TRUE` by default, meaning all additional list columns in the data frame will be removed automatically. So in this case, when we unnest **author,** **link** is dropped as well. If you want to keep it, just set it to `FALSE` Note, however, that it will not unnest it.
 
-```{r journals6, eval=TRUE,cache=TRUE}
-my_journals_author2 <- my_journals_clean2 %>%
-  tidyr::unnest(author, .drop = FALSE)
+## Getting more than 1000 results with the `cursor` argument to `cr_journals`
+
+If our result will have more than 1000 results, we have to use the `cursor` argument. Here we will look at the journal *Philosophical Transactions*, the longest running scientific journal in the world. We first run `cr_journals` with `works` set to `FALSE` in order to get the journal details, specifically to find out how many articles from this journal are indexed in Crossref.
+
+```{r cursor, eval=TRUE,cache=TRUE,echo=FALSE}
+philo_issn <- '2053-9223'
+philo_details <- rcrossref::cr_journals(philo_issn, works = FALSE) %>%
+  pluck("data")
+philo_details$total_dois
+```
+
+Because there are 8,534 articles, we need to pass the `cursor` argument to `cr_journals`, which is called "deep paging." As described by [Paul Oldham](https://poldham.github.io/abs/crossref.html):
+
+> "the CrossRef API also permits deep paging (fetching results from multiple pages). We can retrieve all the results by setting the cursor to the wildcard * and the cursor_max to the total results. Note that the cursor and the cursor_max arguments must appear together for this to work. Because it can take a while to retrieve the results we will add a progress bar using .progress to indicate how far along the query is."
+
+See more in the [API documentation](https://github.com/CrossRef/rest-api-doc#deep-paging-with-cursors)
+
+Here I will set the limit to 1,500 rather than collect the entire 8,534.
+
+```{r cursor2, eval=TRUE,cache=TRUE,echo=FALSE}
+philo_articles <- rcrossref::cr_journals(philo_issn, works = TRUE, cursor = "*", cursor_max = 1500, .progress = "text") %>%
+  pluck("data")
 ```
 
 ## Writing publications to disk
 
 We will use the `write_csv()` function from the `readr` package to write our data to disk. This package was loaded when you called `library(tidyverse)` at the beginning of the session.
 
-Unfortunately, you cannot simply write the `my_journals` data frame to a CSV, due to the nested list in the author column. It will throw an error: `"Error in stream_delim_(df, path, ...) : Don't know how to handle vector of type list."`
+First we're going to create a file path to our desktop:
+
+```{r writex, eval=FALSE}
+my_environment <- Sys.getenv("USERNAME")
+my_filepath <- file.path("C:/Users", my_environment, "Desktop")
+```
+
+
+Unfortunately, you cannot simply write the `jah_jama_publications` data frame to a CSV, due to the nested list in the author column. It will throw an error: `"Error in stream_delim_(df, path, ...) : Don't know how to handle vector of type list."`
 
 You have a few choices:
 
 1. You can unnest one of the columns and leave `.drop` set to `TRUE`. This will add rows for all the values in the nested lists, and drop the additional nested lists. 
 
 ```{r write, eval=FALSE}
-my_journals_author <- my_journals_clean2 %>%
-  tidyr::unnest(author, .drop = TRUE)
-readr::write_csv(my_journals_author, "C:/Users/MyUserName/Desktop/my_journals_author.csv")
+jah_jama_publications_auth <- jah_jama_publications %>% 
+  dplyr::filter(!purrr::map_lgl(author, is.null)) %>% 
+  tidyr::unnest(author, .drop = TRUE) %>% 
+  dplyr::bind_rows(jah_jama_publications %>% 
+                     dplyr::filter(map_lgl(author, is.null)) %>%
+                     dplyr::select(-author, -link))
+readr::write_csv(jah_jama_publications_auth, file.path(my_filepath, "jah_jama_publications_auth.csv"))
 ```
 
-2. You can drop the nested lists altogether using a combination of `select_if()` from `dplyr` and `negate()` from `purrr` to drop all lists in the data frame.
+2. You can drop the nested lists altogether using a combination of `select_if()` from `dplyr` and `negate()` from `purrr` to drop all lists in the data frame. This only works if you don't need author or link.
 
 ```{r write2, eval=FALSE}
-my_journals_short <- my_journals %>%
+jah_jama_publications_short <- jah_jama_publications %>%
   dplyr::select_if(purrr::negate(is.list))
-readr::write_csv(my_journals_author, "C:/Users/MyUserName/Desktop/my_journals_short.csv")
+readr::write_csv(jah_jama_publications_author, file.path(my_filepath, "jah_jama_publications_short.csv"))
 ```
+
+We go from 24 to 22 variables because it dropped **author** and **list**.
 
 3. You can use `mutate()` from `dplyr` to coerce the list columns into character vectors:
 
 ```{r write3, eval=FALSE}
-my_journals_mutated <- my_journals %>%
+jah_jama_publications_mutated <- jah_jama_publications %>%
   dplyr::mutate(author = as.character(author)) %>%
   dplyr::mutate(link = as.character(link))
-readr::write_csv(my_journals_mutated, "C:/Users/MyUserName/Desktop/my_journals_mutated.csv")
+readr::write_csv(jah_jama_publications_mutated, file.path(my_filepath, "jah_jama_publications_mutated.csv"))
 ```
 
 # Using `cr_works` to get data on articles
@@ -315,7 +384,7 @@ It is important to note, as Crossref does [in the documentation](https://github.
 
 ## Getting works from a typed citation in a Word document/text file
 
-This can be helpful if you have a bibliography in a Word document or text file that you want to get into a reference management tool like Zotero or EndNote. For instance, you may need to change the style of the citations, or you have incomplete reference metadata and need a nice, fully-formatted citation.
+This can be helpful if you have a bibliography in a Word document or text file that you want to get into a reference management tool like Zotero or EndNote. For instance, you may have written the citations in APA style and need to change to Chicago, but don't want to rekey it all out. Or perhaps you jotted down your citations hastily and left out volume, issue, or page numbers, and you need a nice, fully-formatted citation.
 
 If each citation is on its own line in the Word document--as is likely the case--then you can paste the whole bibliography into an Excel spreadsheet and save it to a CSV file, which can then be read into R.
 
@@ -351,7 +420,15 @@ Now we can print the titles to see how well they match with the titles of the wo
 my_references_works_df$title
 ```
 
-It looks like it did not find the last item, "The Ascent of Open Access", which was a report posted to figshare. Even though this item does have a DOI (https://doi.org/10.6084/m9.figshare.7618751.v2), the `cr_works()` function searches only for Crossref DOIs. 
+It looks like it did not find the last item, "The Ascent of Open Access", which was a report posted to figshare. Did it come back in any of the 5 items we pulled?
+
+```{r works3x2, eval=FALSE,cache=TRUE}
+mypurrr::map_chr
+
+```
+
+
+Even though this item does have a DOI (https://doi.org/10.6084/m9.figshare.7618751.v2), the `cr_works()` function searches only for Crossref DOIs. 
 
 So we can throw this row out using `slice()` from `dplyr`:
 
@@ -474,10 +551,8 @@ my_citations_map
 You can then write this to a text file. If you're using the below code, replace "MyUserName" below with your actual user name to write this file to your desktop. You can get your username by calling `Sys.getenv("USERNAME")`. Or you can change your directory altogether with the `setwd()` function.
 
 ```{r citation3x, eval=FALSE,cache=TRUE}
-write(my_citations_map, file = "C:/Users/MyUserName/Desktop/my_citations.txt")
+write(my_citations_map, file = file.path("C:/Users", my_environment, "Desktop/my_citations.txt")
 ```
-
-The `purrr::map_chr` function is connected to `my_citations` with something called a [Pipe Operator](https://www.datacamp.com/community/tutorials/pipe-r-tutorial) `%>%`. We will be using this operator throughout the tutorial. A pipe takes the output of one statement and makes it the input of the next statement. You can think of it as "then" in natural language. So the above script first takes the `my_citations` data, then it applies the set of functions specified..
 
 The above is helpful if you need to paste the references somewhere, and there are loads of other citation styles included in `rcrossref`--view them by calling `rcrossref::get_styles()` and it will print the list to your console. I'll just print the first 15 below:
 
