@@ -1,7 +1,7 @@
 ---
 title: "Using rorcid"
 author: "Clarke Iakovakis"
-date: "April 12, 2019"
+date: "May 21, 2019"
 output:
   prettydoc::html_pretty:
         number_sections: TRUE
