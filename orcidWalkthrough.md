@@ -1,7 +1,7 @@
 ---
 title: "Using rorcid"
 author: "Clarke Iakovakis"
-date: "April 12, 2019"
+date: "May 21, 2019"
 output:
   prettydoc::html_pretty:
         number_sections: TRUE
@@ -27,7 +27,7 @@ library(prettydoc)
 
 To download R, go to <https://www.r-project.org/>. Click on CRAN (Comprehensive R Archive Network) under Download, and scroll down to your country. Select the download link corresponding to the city that is geographically closest to you.
 
-RStudio is a user interface for working with R. It is called an Integrated Development Environment (IDE)[^5] and acts as a sort of wrapper around the R language. You can use R without RStudio, but it's much more limiting. RStudio makes it easier to import datasets, create and write scripts, and has an autocomplete activated for functions and variables you've already assigned. RStudio makes using R much more effective, and is also free and open source.
+RStudio is a user interface for working with R. It is called an Integrated Development Environment (IDE) and acts as a sort of wrapper around the R language. You can use R without RStudio, but it's much more limiting. RStudio makes it easier to import datasets, create and write scripts, and has an autocomplete activated for functions and variables you've already assigned. RStudio makes using R much more effective, and is also free and open source.
 
 Go to <https://www.rstudio.com/products/RStudio/#Desktop> to download the RStudio desktop software.
 
@@ -236,7 +236,7 @@ carberry_person <- rorcid::orcid_person(carberry_orcid) %>%
 
 If you look at the result for carberry_person in R Studio, you will see it returned a List of 1. You can click on that list to view it in the R Studio viewer. Another way of viewing the list is to use the `jsonedit()` function from the `listviewer` package:
 
-```{r person2, eval=FALSE}
+```{r person2, eval=TRUE,cache=TRUE}
 install.packages("listviewer")
 library(listviewer)
 listviewer::jsonedit(carberry_person)
@@ -269,9 +269,8 @@ carberry_data
 
 We have some issues with the date formatting, which we'll go into in the next section. Each of these functions includes a `.default = NA_character_` argument because if the value is NULL (if the ORCID author didn't input the information) then it will convert that NULL to NA.
 
-* The **created_date** comes from the name list, so technically it is the date the name was created, not the date the ORCID account was created, which is not available in this data. 
-* The **last_modified_date** comes from the account and is the last date the account was modified. These are plucked with `map_dbl()` because they are in `double` format (a numeric data type in R) . 
-* The **given_name**, **family_name**, **credit_name**, **orcid_identifier_path**, and **biography** are plucked with `map_chr()` 
+* The **created_date** comes from the name list, so technically it is the date the name was created, not the date the ORCID account was created, which is not available in this data. * The **last_modified_date** comes from the account and is the last date the account was modified. These are both plucked with `map_dbl()` because they are in `double` format (a numeric data type in R) . 
+* The **given_name**, **family_name**, **credit_name**, **orcid_identifier_path**, and **biography** are plucked with `map_chr()` because they are both `character` types.
 * The **other_names**, **keywords**, **researcher_urls**, and **external_ids** are plucked with `map()` because there may be multiple values (unlike the other names, in which you can only have one). So this will return a nested list to the tibble; we will discuss below how to unnest it.
 
 Now what is going on with those dates?
@@ -293,7 +292,7 @@ carberry_datesAndTimes$created_date
 
 That looks much better.
 
-If you'd prefer to do away with the time altogether, you can use `anydate()` instead of `anytime()`. 
+If you'd prefer to do away with the time altogether (and keep only the date), you can use `anydate()` instead of `anytime()`. 
 
 ```{r date2, eval=TRUE,cache=TRUE}
 carberry_datesOnly <- carberry_data %>%
@@ -302,7 +301,7 @@ carberry_datesOnly <- carberry_data %>%
 carberry_datesOnly$created_date
 ```
 
-Check out the `lubridate` package for more you can do with dates. It is installed with `tidyverse`, but not loaded, so you have to load it with its own call to `library()`. For example, you may be more interested in year of creation than month. So after you run the conversion with `anytime`, you can create year variables:
+Check out the `lubridate` package for more you can do with dates. It is installed with `tidyverse`, but not loaded, so you have to load it with its own call to `library()` (we did this at the beginning of the session). For example, you may be more interested in year of creation than month. So after you run the conversion with `anytime`, you can create year variables:
 
 ```{r date3, eval=TRUE,cache=TRUE}
 carberry_years <- carberry_datesOnly %>%
@@ -346,7 +345,7 @@ carberry_researcherURLs <- carberry_data %>%
 carberry_researcherURLs
 ```
 
-Carberry has two URLs: his Wikipedia page and a page about him on the Brown University Library. So a row is created for each of these URLs, and multiple columns are added such as the last modified date, the url value, and so on. You can get rid of columns you don't want using `select()` from the `dplyr` package.
+Carberry has two URLs: his Wikipedia page and a page about him on the Brown University Library. So a row is created for each of these URLs, and multiple columns are added such as the last modified date, the url value, and so on. You can keep or remove columns you don't want using `select()` from the `dplyr` package.
 
 # Writing to CSV
 
@@ -586,4 +585,4 @@ my_works_externalIDs
 
 # Conclusion
 
-The ORCID API is an excellent tool for analyzing research activity on multiple levels. `rorcid` makes gathering and cleaning the data easier. Thanks to both ORCID and Scott Chamberlain for their contributions to the community. Again, read Paul Oldham's excellent post at https://www.pauloldham.net/introduction-to-orcid-with-rorcid/ for more you can do. I hope this set of functions helps. If you need to get in touch with me, find my contact info at https://info.library.okstate.edu/clarke-iakovakis.
+The ORCID API is an excellent tool for analyzing research activity on multiple levels. `rorcid` makes gathering and cleaning the data easier. Thanks to both ORCID and Scott Chamberlain for their contributions to the community. Again, read Paul Oldham's excellent post at https://www.pauloldham.net/introduction-to-orcid-with-rorcid/ for more you can do. I hope this walkthrough  helps. If you need to get in touch with me, find my contact info at https://info.library.okstate.edu/clarke-iakovakis.
