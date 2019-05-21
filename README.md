@@ -1,7 +1,13 @@
-# Introduction
+# Links
 
-This repo includes materials for a session at TCDL 2019 on May 21 on Querying & Accessing Scholarly Literature metadata: Using `rcrossref`, `rorcid`, and `roadoi`
+[R for Libraries Session1A - Introduction to R and R Studio](https://github.com/ciakovx/rorcid.workshop/blob/master/R%20for%20Libraries%20Session1A%20-%20Introduction%20to%20R%20and%20R%20Studio.md)
 
-We will be focused on the Markdown files in the main branch of the repo:
+[R for Libraries Session1B - Nuts and Bolts of R](https://github.com/ciakovx/rorcid.workshop/blob/master/R%20for%20Libraries%20Session1B%20-%20Nuts%20and%20Bolts%20of%20R.md)
 
+[R For Libraries Session 2 - Data Exploration](https://github.com/ciakovx/rorcid.workshop/blob/master/R%20For%20Libraries%20Session%202%20-%20Data%20Exploration)
 
+[R for Libraries Session 3 - Data Analysis And Visualization](https://github.com/ciakovx/rorcid.workshop/blob/master/R%20for%20Libraries%20Session%203%20-%20Data%20Analysis%20And%20Visualization.md)
+
+[orcidWalkthrough](https://github.com/ciakovx/rorcid.workshop/blob/master/orcidWalkthrough.md)
+
+[crossrefWalkthrough](https://github.com/ciakovx/rorcid.workshop/blob/master/crossrefWalkthrough.md)
