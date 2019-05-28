@@ -25,6 +25,9 @@ library(rcrossref)
 install.packages("usethis")
 library(usethis)
 
+install.packages("janitor")
+library(janitor)
+
 
 # Setting up rorcid -------------------------------------------------------
 
