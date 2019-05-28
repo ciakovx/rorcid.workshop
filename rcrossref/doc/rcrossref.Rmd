@@ -570,21 +570,17 @@ Citation counts per article are not returned with `cr_journals`, but you can get
 
 ```{r citationcount, eval=TRUE,cache=TRUE}
 my_references_dois <- c("10.2139/ssrn.2697412", "10.1016/j.joi.2016.08.002", "10.1371/journal.pone.0020961", "10.3389/fpsyg.2018.01487", "10.1038/d41586-018-00104-7", "10.12688/f1000research.8460.2", "10.7551/mitpress/9286.001.0001")
-
-# this is throwing an error at the moment
-# my_references_citation_count <- rcrossref::cr_citation_count(doi = my_references_dois)
-# my_references_citation_count
+my_references_citation_count <- rcrossref::cr_citation_count(doi = my_references_dois)
+my_references_citation_count
 ```
 
 Then we can join it to the full data frame with `left_join()` from the `dplyr` package. We'll go ahead and sort by the citation count (descending from highest to lowest) using `arrange()` from `dplyr`:
 
-```{r citationcount2, eval=FALSE,cache=TRUE}
+```{r citationcount2, eval=TRUE,cache=TRUE}
 my_references_works_citation_count_joined <- my_references_dois_works %>%
   left_join(my_references_citation_count, by = "doi") %>%
   arrange(desc(count))
 my_references_works_citation_count_joined
-
-# set eval to false--fix when cr_citation_count() is fixed
 ```
 
 Unfortunately, only the publishers who are members of Crossref and are owners of the target article are able to retrieve the actual articles citing it, [as described in this article](https://support.crossref.org/hc/en-us/articles/214318946-Retrieving-cited-by-matches). Until recently we've been beholden to Web of Science or Scopus for that data--unless you find some sneaky way of scraping it--but the [Initiative for Open Citations](https://i4oc.org/) is making great progress towards "the unrestricted availability of scholarly citation data."
