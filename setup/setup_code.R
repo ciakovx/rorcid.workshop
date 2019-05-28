@@ -28,6 +28,9 @@ library(usethis)
 install.packages("janitor")
 library(janitor)
 
+install.packages("roadoi")
+library(roadoi)
+
 
 # Setting up rorcid -------------------------------------------------------
 
