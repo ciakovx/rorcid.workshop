@@ -411,7 +411,7 @@ If each citation is on its own line in your document's bibliography, then you ca
 I mocked one up and saved it to my GitHub, so we'll connect to it by passing the URL on to `url()` and reading it as a CSV with `read_csv`.
 
 ```{r works, eval=TRUE,cache=TRUE}
-my_references <- readr::read_csv(url("https://raw.githubusercontent.com/ciakovx/rorcid.workshop/02e971ad90dfc29d49d0056eb3bf9b79f0ae9557/data/raw/sample_references.csv"))
+my_references <- readr::read_csv(url("https://raw.githubusercontent.com/ciakovx/rorcid.workshop/master/rcrossref/data/raw/sample_references.csv"))
 my_references
 ```
 
