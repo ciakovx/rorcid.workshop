@@ -1,11 +1,14 @@
 ---
 title: "Preparation for Working with Scholarly Literature in R: Pulling, Wrangling, Cleaning, and Analyzing Structured Bibliographic Metadata"
 author: "Clarke Iakovakis"
-date: "May 21, 2019"
+date: "August 5-9, 2019"
 output: 
   pdf_document:
-    number_sections: yes
-    highlight: tango
+  number_sections: TRUE
+  theme: architect
+  df_print: paged
+  toc: true
+  toc_depth: 3
 header-includes:
   - \usepackage{xcolor}
   - \usepackage{fancyhdr}
@@ -18,29 +21,37 @@ knitr::opts_chunk$set(echo = TRUE)
 library(png)
 ```
 
-# Introduction and schedule
+# Introduction
 
-Hello everyone. I'm looking forward to our session at [TCDL](https://www.tdl.org/tcdl/) on Tuesday on "Querying & Accessing Scholarly Literature metadata: Using `rcrossref`, `rorcid`, and `roadoi`." I am [Clarke Iakovakis](https://info.library.okstate.edu/clarke-iakovakis), the Scholarly Services Librarian at Oklahoma State University. The workshop materials are hosted [on my GitHub](https://github.com/ciakovx/rorcid.workshop). I'll also be posting them to [my figshare](https://figshare.com/authors/Clarke_Iakovakis/3990140) when they're finished.
+Hello everyone. I'm looking forward to our AM4 sessions at [FSCI 2019](https://www.force11.org/fsci/2019) on ["AM4 - Working with Scholarly Literature in R: Pulling, Wrangling, Cleaning, and Analyzing Structured Bibliographic Metadata."](https://www.force11.org/fsci/2019/course-abstracts#AM4). I am [Clarke Iakovakis](https://info.library.okstate.edu/clarke-iakovakis), the Scholarly Services Librarian at Oklahoma State University. 
 
-I would ask that you complete the following if you have time before Tuesday's session. A number of people have signed up and it will be difficult to do troubleshooting during the workshop. Please [contact me](https://info.library.okstate.edu/clarke-iakovakis) if you have problems with any of this. You will be receiving another set of documents and code for working with the code packages during the session. This document is only to help you get set up.
+The workshop materials are available on the Google Drive folder for our course at http://tiny.cc/fsci19_am4. You can also find them [on my GitHub](https://github.com/ciakovx/rorcid.workshop). 
 
-We have 4 hours to get through a lot of complex material. We will take 5-10 minute breaks at the end of every hour to avoid being overwhelmed as much as possible. 
+# Learning Objectives
 
-8:00-8:50: Getting used to R and the R Studio environment
+A participant in this course will at the end of the course be able to:
+* Use R to complete a range of data tasks, including navigating the RStudio environment, understanding R syntax and data types, installing and loading packages, reading data from files and APIs, and executing functions for tidying and  analyzing data,
+* Use the rorcid package in R to extract data from ORCID profiles, including authenticating with the ORCID API, finding ORCID iDs by name/affiliation, getting author biographical information, and getting works associated with individuals.
+* Use the rcrossref and roadoi packages in R to extract data from the Crossref and Unpaywall database, including authenticating with the Crossref API, forming queries, getting publication information, getting data on articles, converting articles to BibTeX/RIS, getting citation data, and checking for open access versions.
 
-* What is R? Why R? Assigning values, evaluating expressions, calling functions, data types, 
 
-9:00-9:50: Working with data in R
+# Schedule
 
-* Data frames, lists, data exploration, installing packages
+## Monday:
+* Introduction to R/RStudio and its advantages over other data tools. Setting up R and RStudio and getting to know the interface.
+* Nuts and bolts of R syntax: writing and evaluating expressions, assigning values, calling functions, understanding data types, reading data into R, working with data frames.
+* Using dplyr functions for data manipulation: renaming/recoding/selecting/creating variables, recoding values, ordering data.
 
-10:00-10:50: `rorcid`
+## Tuesday:
 
-* Finding ORCID iDs by name and affiliation, understanding what is returned in the API call, getting biographical information, getting researcher works, writing to disk
 
-11:00-12:00: `rcrossref`
+Thursday:
 
-* Getting publications by journal, understanding what is returned in the API call, getting article metadata, getting BibTex/RIS files, writing to disk
+Friday:
+
+# Set-up Instructions
+
+I would ask that you complete the following if you have time before our session. Please [contact me](https://info.library.okstate.edu/clarke-iakovakis) if you have problems with any of this. You will be receiving another set of documents and code for working with the code packages during the session. This document is only to help you get set up.
 
 # Download R & R Studio
 
@@ -89,12 +100,15 @@ grid::grid.raster(renviron)
 
 Click **File > Save**. Then in the R Studio navigation menu, click Session > Restart R.
 
+# Download files
+
+Go to the Google Drive folder for our course at http://tiny.cc/fsci19_am4. Right click on the **Workshop Materials** folder and click Download. Save the folder to your computer.
+
 # Help with R and R Studio
 
-* [Try R](http://tryr.codeschool.com/) is a browser-based interactive tutorial developed by Code School.
 * `swirl` is a package you can install in R to learn about R and data science interactively. Just type `install.packages("swirl")` into your R console, load the package by typing `library("swirl")`, and then type `swirl()`. Read more at <http://swirlstats.com/>.
-* [R For Data Science](http://r4ds.had.co.nz/) by Garrett Grolemund & Hadley Wickham [the best book out there for learning R]
-* [Introduction to R for Libraries](https://doi.org/10.6084/m9.figshare.8029301) by Clarke Iakovakis [webinar recording, slides, handouts]
+* [R For Data Science](http://r4ds.had.co.nz/) by Garrett Grolemund & Hadley Wickham is the best book out there for learning R.
+* [Introduction to R for Libraries](https://doi.org/10.6084/m9.figshare.8029301) is a webinar recording, slides, handouts
 * [R cheat sheets (all)](https://github.com/rstudio/cheatsheets)
   - [base R cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/base-r.pdf)
   - [purrr cheat sheet](https://github.com/rstudio/cheatsheets/blob/master/purrr.pdf)
